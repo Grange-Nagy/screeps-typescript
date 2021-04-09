@@ -43,7 +43,7 @@ interface CreepMemory{
 }
 
 export const loop = ErrorMapper.wrapLoop(() => {
-  //console.log(`Current game tic is ${Game.time}`);
+  console.log(`Current game tic is ${Game.time}`);
 
   //define global memory as room 1's
   var taskManagerMemory = Game.spawns['Spawn1'].room.memory;
@@ -98,14 +98,14 @@ export const loop = ErrorMapper.wrapLoop(() => {
   for(let name in Game.spawns){
     let spawn = Game.spawns[name];
     let nodes = spawn.room.find(FIND_SOURCES);
-    newTasks.concat(manageRoomNodes(spawn, nodes, active_tasks));
+    newTasks = newTasks.concat(manageRoomNodes(spawn, nodes, active_tasks));
 
     let constructionSites = spawn.room.find(FIND_CONSTRUCTION_SITES);
-    newTasks.concat(createBuildTasks(constructionSites, active_tasks, enqueued_tasks));
+    newTasks = newTasks.concat(createBuildTasks(constructionSites, active_tasks, enqueued_tasks));
 
 
   }
-
+  //console.log(JSON.stringify(newTasks));
   var unassignedTasks: Array<Task> = assignTasks(newTasks, currentWorkers, active_tasks, enqueued_tasks);
 
   //request more creeps

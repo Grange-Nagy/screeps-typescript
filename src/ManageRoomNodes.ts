@@ -5,7 +5,7 @@ import { Task_JetcanMine } from "Task_JetcanMine";
 var taskManagerMemory = Game.spawns['Spawn1'].room.memory;
 
 export function manageRoomNodes(spawn: StructureSpawn, nodes: Array<Source>, active_tasks: Array<[Task, (Creep | StructureSpawn)]>):Array<Task>{
-    let newTasks: Array<Task> = [];
+    var newTasks: Array<Task> = [];
     for(let i = 0; i < nodes.length; i++){
 
         //if node has not been assigned container location in global memory
@@ -44,6 +44,7 @@ export function manageRoomNodes(spawn: StructureSpawn, nodes: Array<Source>, act
             }
           }
           if (!(isAssigned)){
+
             newTasks.push(new Task_JetcanMine(nodes[i],containerEntry[1]));
           }
           if(!(isContainer)){
@@ -52,5 +53,6 @@ export function manageRoomNodes(spawn: StructureSpawn, nodes: Array<Source>, act
         }
 
       }
+      //console.log(JSON.stringify(newTasks));
       return newTasks;
 }
