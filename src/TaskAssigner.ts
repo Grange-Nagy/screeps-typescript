@@ -8,7 +8,7 @@ export function assignTasks(newTasks: Array<Task>, currentWorkers: Array<Creep |
                             enqueued_tasks: Array<[Task, (Creep | StructureSpawn)]> ): Array<Task>{
     var unassignedTasks: Array<Task> = [];
 
-    newTasks.sort(((a: Task, b: Task) => a.priority - b.priority));
+    newTasks.sort(((a: Task, b: Task) => a.priority > b.priority ? -1 : 1));
     for(let task of newTasks){
         //checks valid worker types in specified ordering
         for(let valWorker of task.validWorkers){

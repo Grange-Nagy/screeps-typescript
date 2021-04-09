@@ -21,11 +21,11 @@ export class Task_MoveItem implements Task {
     sourceID:                 Id<AnyStoreStructure>;
     destinationID:            Id<AnyStoreStructure>;
     ammount:                  number;
-    itemType:                 Resource;
+    itemType:                 ResourceConstant;
     hasItems:                 boolean;
 
 
-  constructor(sourceID: Id<AnyStoreStructure>, destinationID: Id<AnyStoreStructure>, ammount: number, itemType: Resource, priority: number) {
+  constructor(sourceID: Id<AnyStoreStructure>, destinationID: Id<AnyStoreStructure>, ammount: number, itemType: ResourceConstant, priority: number) {
     this.name = "move_item";
     this.status = "HALTED";
     this.taskLocation = (Game.getObjectById(sourceID) as AnyStoreStructure).pos;
@@ -33,7 +33,7 @@ export class Task_MoveItem implements Task {
     this.priority = priority;
     this.isRepeatable = true;
     this.requireResource = true;
-    this.validWorkers = WorkerTypes.filter(w => w.categories.includes("hauler"));
+    this.validWorkers = WorkerTypes.filter(w => w.categories.includes("hauler") && w.CARRY*50 > ammount).sort((a,b) => (a.CARRY - b.CARRY));
     this.estRemainingTime = (PathFinder.search((Game.getObjectById(sourceID) as AnyStoreStructure).pos, (Game.getObjectById(destinationID) as AnyStoreStructure).pos)).cost;    //assuming speed 1
 
     this.sourceID = sourceID;

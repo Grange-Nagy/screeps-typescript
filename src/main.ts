@@ -44,6 +44,7 @@ interface CreepMemory{
 
 export const loop = ErrorMapper.wrapLoop(() => {
   console.log(`Current game tic is ${Game.time}`);
+  console.log(JSON.stringify(WorkerTypes));
 
   //define global memory as room 1's
   var taskManagerMemory = Game.spawns['Spawn1'].room.memory;

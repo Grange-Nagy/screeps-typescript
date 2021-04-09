@@ -9,8 +9,9 @@ export const WorkerTypes: Array<WorkerType> = [
     new WorkerType("large_spawner", ["spawner"], [0,1,0,0,0,0,0,0]),
 
     //hauler
-    new WorkerType("small_hauler", ["hauler"], [0,1,0,0,0,0,0,0]),
-    new WorkerType("large_hauler", ["hauler"], [0,2,6,0,0,0,0,0]),
+    new WorkerType("small_hauler", ["hauler"], [0,1,1,0,0,0,0,0]),
+    new WorkerType("medium_hauler", ["hauler"], [0,2,2,0,0,0,0,0]),
+    new WorkerType("large_hauler", ["hauler"], [0,3,3,0,0,0,0,0]),
 
     //builder
     new WorkerType("small_builder", ["builder"], [2,4,2,0,0,0,0,0]),
