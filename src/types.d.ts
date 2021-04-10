@@ -1,33 +1,67 @@
-// example declaration file - remove these and add your own custom typings
-/*
-import { Task } from "Task";
-
-interface SpawnMemory { [name: string]: any }
-
-interface SpawnMemory {
-  tasks: Array<Task>;
+interface PathfinderReturn {
+  path: RoomPosition[];
+  ops: number;
+  cost: number;
+  incomplete: boolean;
 }
 
-interface Memory{
-  id:   number;
+interface TravelToReturnData {
+  nextPos?: RoomPosition;
+  pathfinderReturn?: PathfinderReturn;
+  state?: TravelState;
+  path?: string;
 }
 
-// memory extension samples
+interface TravelToOptions {
+  ignoreRoads?: boolean;
+  ignoreCreeps?: boolean;
+  ignoreStructures?: boolean;
+  preferHighway?: boolean;
+  highwayBias?: number;
+  allowHostile?: boolean;
+  allowSK?: boolean;
+  range?: number;
+  obstacles?: { pos: RoomPosition }[];
+  roomCallback?: (roomName: string, matrix: CostMatrix) => CostMatrix | boolean;
+  routeCallback?: (roomName: string) => number;
+  returnData?: TravelToReturnData;
+  restrictDistance?: number;
+  useFindRoute?: boolean;
+  maxOps?: number;
+  movingTarget?: boolean;
+  freshMatrix?: boolean;
+  offRoad?: boolean;
+  stuckValue?: number;
+  maxRooms?: number;
+  repath?: number;
+  route?: { [roomName: string]: boolean };
+  ensurePath?: boolean;
+}
+
+interface TravelData {
+  state: any[];
+  path: string;
+}
+
+interface TravelState {
+  stuckCount: number;
+  lastCoord: Coord;
+  destination: RoomPosition;
+  cpu: number;
+}
+
+interface Creep {
+  travelTo(destination: HasPos | RoomPosition, ops?: TravelToOptions): number;
+}
+
 interface CreepMemory {
-  role: string;
-  room: string;
-  working: boolean;
+  _trav?: TravelData;
 }
 
-interface Memory {
-  uuid: number;
-  log: any;
+interface RoomMemory {
+  avoid: number;
 }
 
-// `global` extension samples
-declare namespace NodeJS {
-  interface Global {
-    log: any;
-  }
-}
-*/
+type Coord = { x: number; y: number };
+type HasPos = { pos: RoomPosition };
+

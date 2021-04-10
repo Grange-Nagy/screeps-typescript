@@ -6,7 +6,7 @@ const part_names = ["WORK","MOVE","CARRY","ATTACK","RANGED_ATTACK","HEAL","CLAIM
 export const WorkerTypes: Array<WorkerType> = [
     //spawner
     new WorkerType("small_spawner", ["spawner"], [0,1,0,0,0,0,0,0]),
-    new WorkerType("large_spawner", ["spawner"], [0,1,0,0,0,0,0,0]),
+    //new WorkerType("large_spawner", ["spawner"], [0,1,0,0,0,0,0,0]),
 
     //hauler
     new WorkerType("small_hauler", ["hauler"], [0,1,1,0,0,0,0,0]),

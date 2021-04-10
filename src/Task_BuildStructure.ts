@@ -62,24 +62,30 @@ export function runTask_BuildStructure(taskOwner: Creep, task: Task_BuildStructu
                 task.status = "RUNNING";
                 taskOwner.build(maybeSite);
             }else{
-                if(taskOwner.moveTo(dest) != 0){
+                if(taskOwner.travelTo(dest) != 0){
                     task.status = "HALTED";
                 }else{
                 task.status = "RUNNING";
                 }
             }
         }else{
-            let source = taskOwner.pos.findClosestByPath(taskOwner.room.find(FIND_STRUCTURES).filter(ele => ele.structureType == STRUCTURE_CONTAINER && ele.isActive));
+            let source = taskOwner.pos.findClosestByPath(taskOwner.room.find(FIND_STRUCTURES).filter(struct => <StructureConstant>struct.structureType == STRUCTURE_CONTAINER));
             if(source){
                 if (taskOwner.pos.isNearTo(source.pos)){
-                    taskOwner.transfer(source,RESOURCE_ENERGY);
+                    let errCode = taskOwner.withdraw(source,RESOURCE_ENERGY,taskOwner.memory.type.CARRY*50);
+                    if(errCode != 0 ){
+                        console.log(errCode);
+                    }
                 }else{
-                    if(taskOwner.moveTo(source.pos) != 0){
+                    if(taskOwner.travelTo(source.pos) != 0){
                         task.status = "HALTED";
                     }else{
-                    task.status = "RUNNING";
+                        //console.log("x: " + source.pos.x + " y: " + source.pos.y);
+                        task.status = "RUNNING";
                     }
                 }
+            }else{
+                console.log(taskOwner.name + " failed to find path to source to build " + task.constructionSiteID);
             }
         }
 

@@ -32,8 +32,9 @@ export class Task_MoveItem implements Task {
     this.taskDestination = (Game.getObjectById(destinationID) as AnyStoreStructure).pos;
     this.priority = priority;
     this.isRepeatable = true;
-    this.requireResource = true;
+    this.requireResource = false;
     this.validWorkers = WorkerTypes.filter(w => w.categories.includes("hauler") && w.CARRY*50 > ammount).sort((a,b) => (a.CARRY - b.CARRY));
+    //console.log("valid workers in move constructor: " + JSON.stringify(this.validWorkers));
     this.estRemainingTime = (PathFinder.search((Game.getObjectById(sourceID) as AnyStoreStructure).pos, (Game.getObjectById(destinationID) as AnyStoreStructure).pos)).cost;    //assuming speed 1
 
     this.sourceID = sourceID;
@@ -62,15 +63,34 @@ export function runTask_MoveItem(taskOwner: Creep, task: Task_MoveItem) {
           console.log(taskOwner.name + " is failing to transfer with retcode: " + err);
         }
         task.status = "COMPLETED";
-      }
-      if(taskOwner.store[task.itemType] == task.ammount){
-        task.hasItems = true;
-        if(taskOwner.moveTo(dest.pos) == 0){
-          task.status = "RUNNING";
-        }else{
-          task.status = "HALTED";
+      }else{
+        if(taskOwner.store[task.itemType] == task.ammount){
+          task.hasItems = true;
+          if(taskOwner.travelTo(dest.pos) == 0){
+            task.status = "RUNNING";
+          }else{
+            task.status = "HALTED";
+          }
         }
       }
+      if(!task.hasItems){
+        if(taskOwner.pos.isNearTo(task.taskLocation as RoomPosition)){
+          let err = taskOwner.withdraw(source, task.itemType, task.ammount);
+          if (!err){
+            task.status = "RUNNING";
+          }else{
+            task.status = "HALTED";
+            console.log(taskOwner.name + " is failing to withdraw with retcode: " + err);
+          }
+        }else{
+          if(taskOwner.travelTo(source.pos) == 0){
+            task.status = "RUNNING";
+          }else{
+            task.status = "HALTED";
+          }
+        }
+      }
+
 
 
     }else{

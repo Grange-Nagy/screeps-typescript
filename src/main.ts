@@ -43,20 +43,28 @@ interface CreepMemory{
 
 }
 
+
+import { Traveler } from "utils/Traveler";
+
+Traveler.init();
+
 export const loop = ErrorMapper.wrapLoop(() => {
   console.log(`Current game tic is ${Game.time}`);
-  console.log(JSON.stringify(WorkerTypes));
 
   //define global memory as room 1's
   var taskManagerMemory = Game.spawns['Spawn1'].room.memory;
   taskManagerMemory.isGlobal = true;
+  if(!taskManagerMemory.sourceContainerAssignments){
+    taskManagerMemory.sourceContainerAssignments = [];
+  }
+
 
   var newTasks: Array<Task> = [];
   var currentWorkers: Array<Creep | StructureSpawn> = [];
   var active_tasks: Array<[Task, (Creep | StructureSpawn)]> = [];
   var enqueued_tasks: Array<[Task, (Creep | StructureSpawn)]> = [];
 
-  Game.spawns['Spawn1'].memory.type = new WorkerType("small_spawner", ["spawner"], [0,1,0,0,0,0,0,0]);
+  //Game.spawns['Spawn1'].memory.type = new WorkerType("small_spawner", ["spawner"], [0,1,0,0,0,0,0,0]);
 
 
   for(let name in Game.spawns){
@@ -109,10 +117,10 @@ export const loop = ErrorMapper.wrapLoop(() => {
 
 
   }
-  //console.log(JSON.stringify(newTasks));
   var unassignedTasks: Array<Task> = assignTasks(newTasks, currentWorkers, active_tasks, enqueued_tasks);
 
   //request more creeps
+
 
   for(let unassignedTask of unassignedTasks){
 

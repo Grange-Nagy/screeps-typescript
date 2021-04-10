@@ -55,7 +55,7 @@ export function runTask_SpawnCreep(taskOwner: StructureSpawn, task: Task_SpawnCr
             } else {
                 var newName = task.creep.name + Game.time;
                 var ret_code = taskOwner.spawnCreep(task.creep.stringRep, newName);
-                console.log(JSON.stringify("spawning " + task.creep.name + " ret code: " + ret_code));
+
                 if (ret_code == 0){
                     task.status = "RUNNING";
                 }else{

@@ -11,6 +11,8 @@ export function assignTasks(newTasks: Array<Task>, currentWorkers: Array<Creep |
     newTasks.sort(((a: Task, b: Task) => a.priority > b.priority ? -1 : 1));
     for(let task of newTasks){
         //checks valid worker types in specified ordering
+      //console.log(task.name);
+
         for(let valWorker of task.validWorkers){
           let avaliableValidWorkers: Array<Creep | StructureSpawn> = []
 
@@ -19,6 +21,7 @@ export function assignTasks(newTasks: Array<Task>, currentWorkers: Array<Creep |
               continue;
             }else{
               if (valWorker.name == workman.memory.type.name){
+
                   if (task.requireResource){
                       //some function to test if resource is avaliable for task on worker
                       //for the time being just don't do it
@@ -28,7 +31,7 @@ export function assignTasks(newTasks: Array<Task>, currentWorkers: Array<Creep |
                             continue;
                           }
                       }
-                      console.log("Task: " + workman.name + " lacks the resources to execute task: " + task.name);
+                      //console.log("Task: " + workman.name + " lacks the resources to execute task: " + task.name);
                   }else{
                     avaliableValidWorkers.push(workman);
                   }
@@ -36,11 +39,11 @@ export function assignTasks(newTasks: Array<Task>, currentWorkers: Array<Creep |
               }
             }
           }
-          //console.log(JSON.stringify(avaliableValidWorkers));
+          console.log("worker avail on task " + task.name + JSON.stringify(avaliableValidWorkers));
 
           if(avaliableValidWorkers === undefined || avaliableValidWorkers.length == 0){
             //handle lack of workers
-            console.log("No avaliable worker of type: " + valWorker.name + " for task: " + task.name);
+            //console.log("No avaliable worker of type: " + valWorker.name + " for task: " + task.name);
             continue;
           }
           let prio = task.priority;
@@ -109,14 +112,19 @@ export function assignTasks(newTasks: Array<Task>, currentWorkers: Array<Creep |
             }
             //at 2, find nearest worker (in time) appending to takslist if not idle
             case(2):{
+
+              //console.log(JSON.stringify(task));
+              //console.log("debug " + task.taskDestination.x);
               let winner: [(Creep | StructureSpawn), number] = [avaliableValidWorkers[0], 99999999999];
 
               for(let potentialWorker of avaliableValidWorkers){
                 let path = PathFinder.search(potentialWorker.pos, task.taskLocation);
                 let estTimeUntilFree = 0
+                //console.log("debug2 " + potentialWorker.memory.tasks?.length);
                 for(let i = 0; i < potentialWorker.memory.tasks?.length; i++){
                   if(potentialWorker.memory.tasks[i].estRemainingTime > 9999999){
                     estTimeUntilFree = 99999999;
+
                     break;
                   }
                   if(potentialWorker.memory.tasks[i].priority != 0){
@@ -129,18 +137,27 @@ export function assignTasks(newTasks: Array<Task>, currentWorkers: Array<Creep |
                   }
 
                 }
+
+///////////////////////////////////////////////////////
                 let time_to_live = 0;
                 if(potentialWorker instanceof Creep){
                   if(potentialWorker.ticksToLive){
+
                     time_to_live = potentialWorker.ticksToLive;
                   }else{time_to_live = 0;}
                 }else{time_to_live = 99999999;}
+
                 let totalCost = (path.cost * potentialWorker.memory.type.unburdened_speed) + estTimeUntilFree;
                 if(totalCost < winner[1] && totalCost + task.estRemainingTime < time_to_live){
                   winner[0] = potentialWorker;
                   winner[1] = totalCost;
+                  console.log("Winner found in task " + task.name);
+                }else{
+                  console.log("total cost: " + totalCost + ", winner[1]: " + winner[1] + ", totalCost + task.estRemainingTime: " + (totalCost + task.estRemainingTime) + ", time to live: " + time_to_live);
                 }
               }
+              //////////////////////////////////////////////
+
 
               if(winner[0].memory.tasks?.length > 0){
                 let zeroIndex = winner[0].memory.tasks.findIndex(ele => ele.priority == 0);
@@ -169,7 +186,7 @@ export function assignTasks(newTasks: Array<Task>, currentWorkers: Array<Creep |
               if (idleValidWorkers === undefined || idleValidWorkers.length == 0){
                 continue;
               }
-              console.log("IDLE WORKERS: " + JSON.stringify(idleValidWorkers));
+              //console.log("IDLE WORKERS: " + JSON.stringify(idleValidWorkers));
               let winner: [(Creep | StructureSpawn), number] = findNearestInTime(task.taskLocation, idleValidWorkers);
               winner[0].memory.tasks.push(task);
               active_tasks.push([task,winner[0]]);
@@ -185,12 +202,14 @@ export function assignTasks(newTasks: Array<Task>, currentWorkers: Array<Creep |
         if(task.priority != 0){
             for (var valType of task.validWorkers){
                 if(!(valType.categories.includes("spawner"))){
-                    newTasks.push(new Task_SpawnCreep(task.taskLocation,1,true,valType));
+                    //console.log("attempting to spin up a " + valType.name + "because failed to find worker for:= " + JSON.stringify(task));
+                    newTasks.push(new Task_SpawnCreep(task.taskLocation,1,false,valType));
                 }
             }
         }
 
 
       }
+      //console.log("Task: s undefined prio");
       return unassignedTasks;
 }

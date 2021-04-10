@@ -2,17 +2,18 @@ import { SourceNode } from "source-map";
 import { Task } from "Task";
 import { Task_JetcanMine } from "Task_JetcanMine";
 
-var taskManagerMemory = Game.spawns['Spawn1'].room.memory;
+
 
 export function manageRoomNodes(spawn: StructureSpawn, nodes: Array<Source>, active_tasks: Array<[Task, (Creep | StructureSpawn)]>):Array<Task>{
+    var taskManagerMemory = Game.spawns['Spawn1'].room.memory;
     var newTasks: Array<Task> = [];
     for(let i = 0; i < nodes.length; i++){
 
         //if node has not been assigned container location in global memory
         if (taskManagerMemory.sourceContainerAssignments.findIndex(e => e[0] == nodes[0].id) == -1){
           //find locations for each container and store them in global memory
-          let path = nodes[i].room.findPath(nodes[i].pos,spawn.pos);
-          let containerLocation = new RoomPosition(path[0].x, path[0].y, nodes[i].room.name);
+          let path = PathFinder.search(nodes[i].pos,spawn.pos);
+          let containerLocation = new RoomPosition(path.path[0].x, path.path[0].y, nodes[i].room.name);
           taskManagerMemory.sourceContainerAssignments.push([nodes[0].id,containerLocation]);
         }
 
@@ -53,6 +54,5 @@ export function manageRoomNodes(spawn: StructureSpawn, nodes: Array<Source>, act
         }
 
       }
-      //console.log(JSON.stringify(newTasks));
       return newTasks;
 }

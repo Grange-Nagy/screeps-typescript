@@ -8,9 +8,26 @@ export function createBuildTasks(constructionSites: Array<ConstructionSite>,
 
     let newTasks: Array<Task> = [];
 
+    let activeSiteIds: Array<Id<ConstructionSite>> = [];
+    for(let task of active_tasks){
+        if(task[0].name == "build_structure"){
+            activeSiteIds.push((task[0] as Task_BuildStructure).constructionSiteID);
+        }
+    }
+    let queuedSiteIds: Array<Id<ConstructionSite>> = [];
+    for(let task of enqueued_tasks){
+        if(task[0].name == "build_structure"){
+            queuedSiteIds.push((task[0] as Task_BuildStructure).constructionSiteID);
+        }
+    }
+
+
+
     for( let site of constructionSites){
-        if(active_tasks.findIndex(ele => ele[0].taskLocation == site.pos && ele[0].name == "build_structure") == -1 &&
-         enqueued_tasks.findIndex(ele => ele[0].taskLocation == site.pos && ele[0].name == "build_structure") == -1){
+        if(!activeSiteIds.includes(site.id) &&
+           !queuedSiteIds.includes(site.id)){
+
+
             newTasks.push(new Task_BuildStructure(site, 2));
          }
     }
