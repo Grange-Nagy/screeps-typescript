@@ -13,11 +13,11 @@ export function manageRoomEnergy(spawn: StructureSpawn, active_tasks: Array<[Tas
     if(spawn.room.energyCapacityAvailable = spawn.room.energyAvailable){
         return [];
     }
-    let containers: Array<[StructureContainer, number]> = [];       //array of containers and their available energy
+    let containers: Array<[StructureContainer, number, Array<AnyStoreStructure>]> = [];       //array of containers and their available energy
     //calculate energy in each container accounting for current tasks
     for(let containerName in Game.structures){
         if (spawn.room.find(FIND_STRUCTURES).filter(struct => taskManagerMemory.sourceContainerAssignments.findIndex(ele => ele[1] == struct.pos) != -1)){
-            containers.push([Game.structures[containerName] as StructureContainer, (Game.structures[containerName] as StructureContainer).store.energy]);
+            containers.push([Game.structures[containerName] as StructureContainer, (Game.structures[containerName] as StructureContainer).store.energy, []]);
         }
     }
     for (let task of active_tasks){
@@ -30,7 +30,38 @@ export function manageRoomEnergy(spawn: StructureSpawn, active_tasks: Array<[Tas
 
         }
 
+    //needEnergy.sort((a,b) => (a as AnyStoreStructure).store.energy > (b as AnyStoreStructure).store.energy ? -1 : 1);
+
+
+
+
     }
+    let needEnergy: Array<AnyStoreStructure>  = spawn.room.find(FIND_STRUCTURES).filter(
+                                                struct => (struct.structureType == STRUCTURE_EXTENSION
+                                                || struct.structureType == STRUCTURE_SPAWN)
+                                                && struct.store.getFreeCapacity(RESOURCE_ENERGY) > 50) as Array<AnyStoreStructure>;
+
+    //assign energy need to source
+    var prio = 2;
+    if (spawn.room.energyCapacityAvailable < 100){
+        prio = 3;
+    }
+
+    for(let need of needEnergy){
+        let path = PathFinder.search(need.pos, containers.map(x => x[0]).map(y => y.pos));
+        if(path.path){
+            for(let c of containers){
+                if(c[0].pos.isNearTo(path.path[path.path.length - 1])){
+                    newTasks.push(new Task_MoveItem(c[0].id, need.id,  need.store.getFreeCapacity(RESOURCE_ENERGY) % 50, RESOURCE_ENERGY, prio));
+                }
+            }
+        }
+
+    }
+
+
+
+
 
 
 

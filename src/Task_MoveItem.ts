@@ -49,11 +49,28 @@ export class Task_MoveItem implements Task {
 
 export function runTask_MoveItem(taskOwner: Creep, task: Task_MoveItem) {
 
-
     //this is utterly fucking retarded
     let source = Game.getObjectById(task.sourceID);
     let dest = Game.getObjectById(task.destinationID);
     if(source && dest){
+      if(task.hasItems && taskOwner.pos.isNearTo(task.taskDestination as RoomPosition)){
+        let err = taskOwner.transfer(dest, task.itemType, task.ammount);
+        if (!err){
+          task.status = "RUNNING";
+        }else{
+          task.status = "HALTED";
+          console.log(taskOwner.name + " is failing to transfer with retcode: " + err);
+        }
+        task.status = "COMPLETED";
+      }
+      if(taskOwner.store[task.itemType] == task.ammount){
+        task.hasItems = true;
+        if(taskOwner.moveTo(dest.pos) == 0){
+          task.status = "RUNNING";
+        }else{
+          task.status = "HALTED";
+        }
+      }
 
 
     }else{

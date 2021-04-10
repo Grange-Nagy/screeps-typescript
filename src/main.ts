@@ -10,6 +10,7 @@ import { WorkerType } from "WorkerType";
 import { WorkerTypes } from "WorkerTypes";
 
 import {Task_SpawnCreep} from "./Task_SpawnCreep";
+import { manageRoomEnergy } from "ManageRoomEnergy";
 
 // When compiling TS to JS and bundling with rollup, the line numbers and file names in error messages change
 // This utility uses source maps to get the line numbers and file names of the original, TS source code
@@ -103,6 +104,8 @@ export const loop = ErrorMapper.wrapLoop(() => {
 
     let constructionSites = spawn.room.find(FIND_CONSTRUCTION_SITES);
     newTasks = newTasks.concat(createBuildTasks(constructionSites, active_tasks, enqueued_tasks));
+
+    newTasks = newTasks.concat(manageRoomEnergy(spawn,active_tasks,enqueued_tasks));
 
 
   }
