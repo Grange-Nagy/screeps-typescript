@@ -224,6 +224,5 @@ export function assignTasks(newTasks: Array<Task>, currentWorkers: Array<Creep |
 
 
       }
-      //console.log("Task: s undefined prio");
       return unassignedTasks;
 }
