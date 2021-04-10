@@ -25,7 +25,7 @@ export class Task_JetcanMine implements Task {
     this.status = "HALTED";
     this.taskLocation = containerPos;
     this.taskDestination = containerPos;
-    this.priority = 3;
+    this.priority = 1;
     this.isRepeatable = true;
     this.requireResource = false;
     this.validWorkers = WorkerTypes.filter(w => w.categories.includes("miner"));

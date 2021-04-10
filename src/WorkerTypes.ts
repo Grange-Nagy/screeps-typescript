@@ -18,6 +18,6 @@ export const WorkerTypes: Array<WorkerType> = [
     //new WorkerType("small_long_range_builder", ["builder"],  [1,3,2,0,0,0,0,0]),
 
     //miner
-    new WorkerType("small_jetcan_miner", ["miner"], [5,1,0,0,0,0,0,0])
+    new WorkerType("small_jetcan_miner", ["miner"], [2,1,0,0,0,0,0,0])
     //new WorkerType("large_miner", ["miner"], [2,1,1,0,0,0,0,0])
     ]

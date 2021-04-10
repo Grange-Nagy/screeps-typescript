@@ -5,7 +5,7 @@ import { Task } from "./Task";
 
 
 
-export class Task_BuildStructure implements Task {
+export class Task_RepairStructure implements Task {
     name: string;
     status: string;
     taskLocation: RoomPosition;
@@ -16,54 +16,53 @@ export class Task_BuildStructure implements Task {
     validWorkers: Array<WorkerType>;
     estRemainingTime: number;
 
-
   //-------------------------------------------
 
-    building:                   boolean;
-    constructionSiteID:         Id<ConstructionSite>;
+  repairing:                   boolean;
+    structureID:         Id<AnyStructure>;
+    initHits:                   number;
     timePassed:                 number;
-    bootstrap: boolean;
 
-  constructor(constructionSite: ConstructionSite, priority: number) {
-    this.name = "build_structure";
+  constructor(repairSite: AnyStructure, priority: number) {
+    this.name = "repair_structure";
     this.status = "HALTED";
-    this.taskLocation = constructionSite.pos;
-    this.taskDestination = constructionSite.pos;
+    this.taskLocation = repairSite.pos;
+    this.taskDestination = repairSite.pos;
     this.priority = priority;
     this.isRepeatable = true;
     this.requireResource = false;
     this.validWorkers = WorkerTypes.filter(w => w.categories.includes("builder"));
-    this.estRemainingTime = (constructionSite.progressTotal);                   //really rough estimation
+    this.estRemainingTime = (repairSite.hitsMax - repairSite.hits) / 4;                   //really rough estimation
 
-    this.building = false;
-    this.constructionSiteID = constructionSite.id;
+    this.repairing = false;
+    this.structureID = repairSite.id;
+    this.initHits = repairSite.hits;
     this.timePassed = 0;
-    this.bootstrap = false;
   }
 
 
 
 }
 
-export function runTask_BuildStructure(taskOwner: Creep, task: Task_BuildStructure) {
+export function runTask_BuildStructure(taskOwner: Creep, task: Task_RepairStructure) {
 
 
     //this is utterly fucking retarded
-    let maybeSite = Game.getObjectById(task.constructionSiteID);
+    let maybeSite = Game.getObjectById(task.structureID);
     if(maybeSite){
         let dest = new RoomPosition(task.taskLocation.x, task.taskLocation.y, task.taskLocation.roomName);
 
-        if(task.building && taskOwner.store[RESOURCE_ENERGY] == 0){
-            task.building = false;
+        if(task.repairing && taskOwner.store[RESOURCE_ENERGY] == 0){
+            task.repairing = false;
         }
-        if(!task.building && taskOwner.store.getFreeCapacity() == 0){
-            task.building = true;
+        if(!task.repairing && taskOwner.store.getFreeCapacity() == 0){
+            task.repairing = true;
         }
 
-        if(task.building){
+        if(task.repairing){
             if (taskOwner.pos.isEqualTo(dest)){
                 task.status = "RUNNING";
-                taskOwner.build(maybeSite);
+                taskOwner.repair(maybeSite);
             }else{
                 if(taskOwner.travelTo(dest) != 0){
                     task.status = "HALTED";
@@ -88,15 +87,14 @@ export function runTask_BuildStructure(taskOwner: Creep, task: Task_BuildStructu
                     }
                 }
             }else{
-                console.log(taskOwner.name + " failed to find path to source to build " + task.constructionSiteID);
-                task.bootstrap = true;
+                console.log(taskOwner.name + " failed to find path to source to build " + task.structureID);
             }
         }
 
 
 
         task.timePassed++;
-        let progressPercent = maybeSite.progress/maybeSite.progressTotal
+        let progressPercent = (maybeSite.hits)/(maybeSite.hitsMax - task.initHits)
         if (progressPercent > 0.15){
             task.estRemainingTime = (1 - progressPercent) / (progressPercent / task.timePassed);
         }
@@ -105,7 +103,6 @@ export function runTask_BuildStructure(taskOwner: Creep, task: Task_BuildStructu
 
     }else{
         task.status = "COMPLETED";
-
 
     }
 

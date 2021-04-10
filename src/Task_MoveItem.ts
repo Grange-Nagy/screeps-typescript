@@ -23,6 +23,7 @@ export class Task_MoveItem implements Task {
     ammount:                  number;
     itemType:                 ResourceConstant;
     hasItems:                 boolean;
+    //beenToSource:                 boolean;
 
 
   constructor(sourceID: Id<AnyStoreStructure>, destinationID: Id<AnyStoreStructure>, ammount: number, itemType: ResourceConstant, priority: number) {
@@ -42,6 +43,7 @@ export class Task_MoveItem implements Task {
     this.ammount = ammount;
     this.itemType = itemType;
     this.hasItems = false;
+    //this.beenToSource = false;
   }
 
 
@@ -54,41 +56,57 @@ export function runTask_MoveItem(taskOwner: Creep, task: Task_MoveItem) {
     let source = Game.getObjectById(task.sourceID);
     let dest = Game.getObjectById(task.destinationID);
     if(source && dest){
-      if(task.hasItems && taskOwner.pos.isNearTo(task.taskDestination as RoomPosition)){
-        let err = taskOwner.transfer(dest, task.itemType, task.ammount);
-        if (!err){
-          task.status = "RUNNING";
-        }else{
-          task.status = "HALTED";
-          console.log(taskOwner.name + " is failing to transfer with retcode: " + err);
-        }
-        task.status = "COMPLETED";
-      }else{
-        if(taskOwner.store[task.itemType] == task.ammount){
+
+
+      //console.log("movecreep stored" + taskOwner.store[task.itemType] + ", requested: " + task.ammount);
+      if(!task.hasItems && taskOwner.store[task.itemType] >= task.ammount){
           task.hasItems = true;
-          if(taskOwner.travelTo(dest.pos) == 0){
-            task.status = "RUNNING";
-          }else{
-            task.status = "HALTED";
-          }
-        }
       }
-      if(!task.hasItems){
-        if(taskOwner.pos.isNearTo(task.taskLocation as RoomPosition)){
-          let err = taskOwner.withdraw(source, task.itemType, task.ammount);
-          if (!err){
-            task.status = "RUNNING";
+
+      if(task.hasItems && taskOwner.store[task.itemType] < task.ammount){
+        task.hasItems = false;
+      }
+
+      if(task.hasItems){
+          if (taskOwner.pos.isNearTo(dest)){
+              task.status = "RUNNING";
+              let err = taskOwner.transfer(dest,task.itemType,task.ammount);
+              if(err != 0){
+                if(err == -8){
+                  task.status = "COMPLETED";
+                }else{
+                  console.log("CREEP STUCK TRANSFFER: " + err)
+                  task.status = "HALTED";
+                }
+
+              }
           }else{
-            task.status = "HALTED";
-            console.log(taskOwner.name + " is failing to withdraw with retcode: " + err);
+              let err = taskOwner.travelTo(dest);
+              console.log("CREEP not?: " + err)
+              if(err != 0){
+                  console.log("CREEP STUCK: " + err)
+                  task.status = "HALTED";
+              }else{
+              task.status = "RUNNING";
+              }
           }
-        }else{
-          if(taskOwner.travelTo(source.pos) == 0){
-            task.status = "RUNNING";
+      }else{
+          if (taskOwner.pos.isNearTo(source.pos)){
+              let errCode = taskOwner.withdraw(source,task.itemType);
+              if(errCode != 0 ){
+                if(errCode == -8){
+                  task.hasItems = true;
+                }
+                  console.log("moveitem err code: " + errCode);
+              }
           }else{
-            task.status = "HALTED";
+              if(taskOwner.travelTo(source.pos) != 0){
+                  task.status = "HALTED";
+              }else{
+                  //console.log("x: " + source.pos.x + " y: " + source.pos.y);
+                  task.status = "RUNNING";
+              }
           }
-        }
       }
 
 

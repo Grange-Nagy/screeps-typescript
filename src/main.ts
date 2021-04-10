@@ -117,6 +117,7 @@ export const loop = ErrorMapper.wrapLoop(() => {
 
 
   }
+  console.log("num new tasks this tick: " + newTasks.length);
   var unassignedTasks: Array<Task> = assignTasks(newTasks, currentWorkers, active_tasks, enqueued_tasks);
 
   //request more creeps

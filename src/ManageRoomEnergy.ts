@@ -40,8 +40,9 @@ export function manageRoomEnergy(spawn: StructureSpawn, active_tasks: Array<[Tas
     }
     let needEnergy: Array<AnyStoreStructure>  = (spawn.room.find(FIND_STRUCTURES).filter(
                                                 struct => (struct.structureType == STRUCTURE_EXTENSION
-                                                || struct.structureType == STRUCTURE_SPAWN)
-                                                && struct.store.getFreeCapacity(RESOURCE_ENERGY) >= 50)) as Array<AnyStoreStructure>;
+                                                || struct.structureType == STRUCTURE_SPAWN))) as Array<AnyStoreStructure>;
+
+
 
     //assign energy need to source
     var prio = 2;
@@ -63,14 +64,31 @@ export function manageRoomEnergy(spawn: StructureSpawn, active_tasks: Array<[Tas
         }
     }
 
+
     for(let need of needEnergy){
 
         if(!activeSiteIds.includes(need.id) &&
            !queuedSiteIds.includes(need.id)){
-            let container = need.pos.findClosestByPath(spawn.room.find(FIND_STRUCTURES).filter(struct => <StructureConstant>struct.structureType == STRUCTURE_CONTAINER));
-
+            let container = need.pos.findClosestByPath(spawn.room.find(FIND_STRUCTURES).filter(struct => struct.structureType == STRUCTURE_CONTAINER));
+            let needed = 0;
+            if(need instanceof StructureSpawn){
+                needed = 300 - need.store.energy;
+            }else if(need instanceof StructureExtension){
+                needed = 50 - need.store.energy;
+            }else{
+                continue;
+            }
+            if(needed < 50){
+                console.log("somethings fucked above this");
+                continue;
+            }
+            if(needed > 100){
+                needed = 100;
+            }
+            console.log("need: " + needed)
+            //let capacityRounded50 = Math.round((need.store.getFreeCapacity(RESOURCE_ENERGY))/50)*50;
             if(container){
-                newTasks.push(new Task_MoveItem((container as StructureContainer).id, need.id, Math.round(((container as StructureContainer).store.getFreeCapacity(RESOURCE_ENERGY))/50)*50, RESOURCE_ENERGY, prio));
+                newTasks.push(new Task_MoveItem((<StructureContainer>container).id, need.id, needed, RESOURCE_ENERGY, 2));
             }
 
          }
