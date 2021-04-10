@@ -45,6 +45,7 @@ interface CreepMemory{
 
 
 import { Traveler } from "utils/Traveler";
+import { createRepairTasks } from "ManageRoomRepair";
 
 Traveler.init();
 
@@ -112,7 +113,7 @@ export const loop = ErrorMapper.wrapLoop(() => {
 
     let constructionSites = spawn.room.find(FIND_CONSTRUCTION_SITES);
     newTasks = newTasks.concat(createBuildTasks(constructionSites, active_tasks, enqueued_tasks));
-
+    newTasks = newTasks.concat(createRepairTasks(spawn,active_tasks,enqueued_tasks));
     newTasks = newTasks.concat(manageRoomEnergy(spawn,active_tasks,enqueued_tasks));
 
 

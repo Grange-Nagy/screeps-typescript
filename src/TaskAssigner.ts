@@ -11,7 +11,7 @@ export function assignTasks(newTasks: Array<Task>, currentWorkers: Array<Creep |
     newTasks.sort(((a: Task, b: Task) => a.priority > b.priority ? -1 : 1));
     for(let task of newTasks){
         //checks valid worker types in specified ordering
-      //console.log(JSON.stringify(task.validWorkers));
+      //console.log(task.name);
 
 
         for(let valWorker of task.validWorkers){
@@ -90,13 +90,17 @@ export function assignTasks(newTasks: Array<Task>, currentWorkers: Array<Creep |
                     time_to_live = potentialWorker.ticksToLive;
                   }else{time_to_live = 0;}
                 }else{time_to_live = 99999999;}
-                if(totalCost < winner[1] && totalCost < time_to_live){
+                if(totalCost <= winner[1] && totalCost < time_to_live){
                   winner[0] = potentialWorker;
                   winner[1] = totalCost;
                 }
               }
 
               //if worker not free
+
+              if(winner[1] > 99999){
+                continue;
+              }
               console.log("WINNER cost: " + winner[1]);
 
               if(winner[0].memory.tasks?.length > 0){
@@ -153,7 +157,7 @@ export function assignTasks(newTasks: Array<Task>, currentWorkers: Array<Creep |
                 }else{time_to_live = 99999999;}
 
                 let totalCost = (path.cost * potentialWorker.memory.type.unburdened_speed) + estTimeUntilFree;
-                if(totalCost < winner[1] && totalCost + task.estRemainingTime < time_to_live){
+                if(totalCost <= winner[1] && totalCost + task.estRemainingTime < time_to_live){
                   winner[0] = potentialWorker;
                   winner[1] = totalCost;
                   //console.log("Winner found in task " + task.name);
@@ -162,8 +166,11 @@ export function assignTasks(newTasks: Array<Task>, currentWorkers: Array<Creep |
                 }
               }
               //////////////////////////////////////////////
-              console.log("WINNER cost: " + winner[1]);
 
+              if(winner[1] > 99999){
+                continue;
+              }
+              console.log("WINNER cost: " + winner[1]);
 
               if(winner[0].memory.tasks?.length > 0){
                 let zeroIndex = winner[0].memory.tasks.findIndex(ele => ele.priority == 0);

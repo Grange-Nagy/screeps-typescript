@@ -32,7 +32,7 @@ export class Task_RepairStructure implements Task {
     this.isRepeatable = true;
     this.requireResource = false;
     this.validWorkers = WorkerTypes.filter(w => w.categories.includes("builder"));
-    this.estRemainingTime = (repairSite.hitsMax - repairSite.hits) / 4;                   //really rough estimation
+    this.estRemainingTime = (repairSite.hitsMax - repairSite.hits);                   //really rough estimation
 
     this.repairing = false;
     this.structureID = repairSite.id;
@@ -44,27 +44,32 @@ export class Task_RepairStructure implements Task {
 
 }
 
-export function runTask_BuildStructure(taskOwner: Creep, task: Task_RepairStructure) {
+export function runTask_RepairStructure(taskOwner: Creep, task: Task_RepairStructure) {
 
 
     //this is utterly fucking retarded
     let maybeSite = Game.getObjectById(task.structureID);
     if(maybeSite){
-        let dest = new RoomPosition(task.taskLocation.x, task.taskLocation.y, task.taskLocation.roomName);
 
+
+
+        let dest = new RoomPosition(task.taskLocation.x, task.taskLocation.y, task.taskLocation.roomName);
         if(task.repairing && taskOwner.store[RESOURCE_ENERGY] == 0){
             task.repairing = false;
         }
         if(!task.repairing && taskOwner.store.getFreeCapacity() == 0){
             task.repairing = true;
         }
-
+        //console.log("err");
         if(task.repairing){
             if (taskOwner.pos.isEqualTo(dest)){
                 task.status = "RUNNING";
                 taskOwner.repair(maybeSite);
+                //console.log("err");
             }else{
-                if(taskOwner.travelTo(dest) != 0){
+                let err = taskOwner.travelTo(dest);
+                if(err != 0){
+                    console.log("err travel repair: " + err);
                     task.status = "HALTED";
                 }else{
                 task.status = "RUNNING";
@@ -74,9 +79,9 @@ export function runTask_BuildStructure(taskOwner: Creep, task: Task_RepairStruct
             let source = taskOwner.pos.findClosestByPath(taskOwner.room.find(FIND_STRUCTURES).filter(struct => <StructureConstant>struct.structureType == STRUCTURE_CONTAINER));
             if(source){
                 if (taskOwner.pos.isNearTo(source.pos)){
-                    let errCode = taskOwner.withdraw(source,RESOURCE_ENERGY,taskOwner.memory.type.CARRY*50);
+                    let errCode = taskOwner.withdraw(source,RESOURCE_ENERGY);
                     if(errCode != 0 ){
-                        console.log(errCode);
+                        console.log("err witdrawl reapair" + errCode);
                     }
                 }else{
                     if(taskOwner.travelTo(source.pos) != 0){
@@ -99,7 +104,9 @@ export function runTask_BuildStructure(taskOwner: Creep, task: Task_RepairStruct
             task.estRemainingTime = (1 - progressPercent) / (progressPercent / task.timePassed);
         }
 
-
+        if(maybeSite.hits == maybeSite.hitsMax){
+            task.status = "COMPLETED";
+        }
 
     }else{
         task.status = "COMPLETED";

@@ -10,6 +10,7 @@ export function createBuildTasks(constructionSites: Array<ConstructionSite>,
 
     let activeSiteIds: Array<Id<ConstructionSite>> = [];
     for(let task of active_tasks){
+        if(task[0] == undefined){continue;}
         if(task[0].name == "build_structure"){
             activeSiteIds.push((task[0] as Task_BuildStructure).constructionSiteID);
         }

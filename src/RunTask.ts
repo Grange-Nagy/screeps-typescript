@@ -2,6 +2,7 @@ import { Task } from "Task";
 import { runTask_BuildStructure, Task_BuildStructure } from "Task_BuildStructure";
 import { runTask_JetcanMine, Task_JetcanMine } from "Task_JetcanMine";
 import { runTask_MoveItem, Task_MoveItem } from "Task_MoveItem";
+import { runTask_RepairStructure, Task_RepairStructure } from "Task_RepairStructure";
 import { runTask_SpawnCreep, Task_SpawnCreep } from "Task_SpawnCreep";
 
 export function runTask(undefTaskOwner: AnyCreep | AnyStructure, undefTask: Task){
@@ -40,6 +41,15 @@ export function runTask(undefTaskOwner: AnyCreep | AnyStructure, undefTask: Task
             if (undefTaskOwner instanceof Creep){
                 let taskOwner: Creep = undefTaskOwner;
                 runTask_BuildStructure(taskOwner,task);
+            }
+            return 0;
+        }
+
+        case("repair_structure"):{
+            let task = undefTask as Task_RepairStructure;
+            if (undefTaskOwner instanceof Creep){
+                let taskOwner: Creep = undefTaskOwner;
+                runTask_RepairStructure(taskOwner,task);
             }
             return 0;
         }

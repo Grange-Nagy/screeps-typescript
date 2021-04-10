@@ -25,7 +25,7 @@ export function manageRoomNodes(spawn: StructureSpawn, nodes: Array<Source>, act
           let isAssigned = false;
           //create jetcan mining tasks
           for(let task of active_tasks){
-            if (task[0].taskLocation == undefined){continue;}
+            if (task[0] == undefined){continue;}
             if(task[0].taskLocation.x === containerPos.x && task[0].taskLocation.y === containerPos.y && task[0].taskLocation.roomName === containerPos.roomName && task[0].name === "jetcan_mine"){
               isAssigned = true;
               //console.log("no need for new miner" + JSON.stringify(task));

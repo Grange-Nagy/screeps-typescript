@@ -49,8 +49,10 @@ export function runTask_JetcanMine(taskOwner: Creep, task: Task_JetcanMine) {
             taskOwner.harvest(maybeNode);
 
         }else{
-            if(taskOwner.travelTo(dest) != 0){
+            let err = taskOwner.travelTo(dest);
+            if(err != 0){
                 task.status = "HALTED";
+                console.log("jetcan miner is halted err code " + err);
             }
             //console.log(taskOwner.name + " is jetcan mining");
         }

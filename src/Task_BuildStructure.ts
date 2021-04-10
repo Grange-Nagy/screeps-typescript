@@ -75,9 +75,9 @@ export function runTask_BuildStructure(taskOwner: Creep, task: Task_BuildStructu
             let source = taskOwner.pos.findClosestByPath(taskOwner.room.find(FIND_STRUCTURES).filter(struct => <StructureConstant>struct.structureType == STRUCTURE_CONTAINER));
             if(source){
                 if (taskOwner.pos.isNearTo(source.pos)){
-                    let errCode = taskOwner.withdraw(source,RESOURCE_ENERGY,taskOwner.memory.type.CARRY*50);
+                    let errCode = taskOwner.withdraw(source,RESOURCE_ENERGY);
                     if(errCode != 0 ){
-                        console.log(errCode);
+                        console.log("build withdraw err " + errCode);
                     }
                 }else{
                     if(taskOwner.travelTo(source.pos) != 0){

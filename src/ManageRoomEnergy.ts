@@ -79,13 +79,13 @@ export function manageRoomEnergy(spawn: StructureSpawn, active_tasks: Array<[Tas
                 continue;
             }
             if(needed < 50){
-                console.log("somethings fucked above this");
+                //console.log("somethings fucked above this");
                 continue;
             }
             if(needed > 100){
                 needed = 100;
             }
-            console.log("need: " + needed)
+            //console.log("need: " + needed)
             //let capacityRounded50 = Math.round((need.store.getFreeCapacity(RESOURCE_ENERGY))/50)*50;
             if(container){
                 newTasks.push(new Task_MoveItem((<StructureContainer>container).id, need.id, needed, RESOURCE_ENERGY, 2));

@@ -73,6 +73,7 @@ export function runTask_MoveItem(taskOwner: Creep, task: Task_MoveItem) {
               let err = taskOwner.transfer(dest,task.itemType,task.ammount);
               if(err != 0){
                 if(err == -8){
+                  taskOwner.transfer(dest,task.itemType);
                   task.status = "COMPLETED";
                 }else{
                   console.log("CREEP STUCK TRANSFFER: " + err)
@@ -82,7 +83,7 @@ export function runTask_MoveItem(taskOwner: Creep, task: Task_MoveItem) {
               }
           }else{
               let err = taskOwner.travelTo(dest);
-              console.log("CREEP not?: " + err)
+              //console.log("CREEP not?: " + err)
               if(err != 0){
                   console.log("CREEP STUCK: " + err)
                   task.status = "HALTED";
@@ -92,12 +93,15 @@ export function runTask_MoveItem(taskOwner: Creep, task: Task_MoveItem) {
           }
       }else{
           if (taskOwner.pos.isNearTo(source.pos)){
-              let errCode = taskOwner.withdraw(source,task.itemType);
+              let errCode = taskOwner.withdraw(source,task.itemType,task.ammount);
               if(errCode != 0 ){
                 if(errCode == -8){
-                  task.hasItems = true;
-                }
+                  taskOwner.withdraw(source,task.itemType)
+                  //console.log("movecreep " + taskOwner.name + " is to small for this move task")
+                }else{
                   console.log("moveitem err code: " + errCode);
+                }
+
               }
           }else{
               if(taskOwner.travelTo(source.pos) != 0){
