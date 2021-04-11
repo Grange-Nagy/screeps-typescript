@@ -1,10 +1,10 @@
 import { Task } from "Task";
-import { runTask_BuildStructure, Task_BuildStructure } from "Task_BuildStructure";
-import { runTask_JetcanMine, Task_JetcanMine } from "Task_JetcanMine";
-import { runTask_MoveItem, Task_MoveItem } from "Task_MoveItem";
-import { runTask_RepairStructure, Task_RepairStructure } from "Task_RepairStructure";
-import { runTask_SpawnCreep, Task_SpawnCreep } from "Task_SpawnCreep";
-import { runTask_UpgradeController, Task_UpgradeController } from "Task_UpgradeController";
+import { runTask_BuildStructure, Task_BuildStructure } from "tasks/Task_BuildStructure";
+import { runTask_JetcanMine, Task_JetcanMine } from "tasks/Task_JetcanMine";
+import { runTask_MoveItem, Task_MoveItem } from "tasks/Task_MoveItem";
+import { runTask_RepairStructure, Task_RepairStructure } from "tasks/Task_RepairStructure";
+import { runTask_SpawnCreep, Task_SpawnCreep } from "tasks/Task_SpawnCreep";
+import { runTask_UpgradeController, Task_UpgradeController } from "tasks/Task_UpgradeController";
 
 export function runTask(undefTaskOwner: AnyCreep | AnyStructure, undefTask: Task){
 

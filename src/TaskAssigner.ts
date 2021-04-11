@@ -1,6 +1,6 @@
 import { Task } from "Task";
-import { Task_SpawnCreep } from "Task_SpawnCreep";
-import { findNearestInTime } from "Utilities";
+import { Task_SpawnCreep } from "tasks/Task_SpawnCreep";
+import { findNearestInTime } from "utils/Utilities";
 
 
 export function assignTasks(newTasks: Array<Task>, currentWorkers: Array<Creep | StructureSpawn>,

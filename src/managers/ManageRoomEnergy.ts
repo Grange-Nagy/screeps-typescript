@@ -1,7 +1,5 @@
-import { SourceNode } from "source-map";
 import { Task } from "Task";
-import { Task_JetcanMine } from "Task_JetcanMine";
-import { Task_MoveItem } from "Task_MoveItem";
+import { Task_MoveItem } from "tasks/Task_MoveItem";
 
 var taskManagerMemory = Game.spawns['Spawn1'].room.memory;
 

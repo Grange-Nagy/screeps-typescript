@@ -1,12 +1,13 @@
 import { Task } from "Task";
-import { Task_BuildStructure } from "Task_BuildStructure";
+import { Task_BuildStructure } from "tasks/Task_BuildStructure";
 
 
-export function createBuildTasks(constructionSites: Array<ConstructionSite>,
+export function manageBuildTasks(spawn: StructureSpawn,
                                 active_tasks: Array<[Task, (Creep | StructureSpawn)]>,
                                 enqueued_tasks: Array<[Task, (Creep | StructureSpawn)]>): Array<Task>{
 
     let newTasks: Array<Task> = [];
+    let constructionSites = spawn.room.find(FIND_CONSTRUCTION_SITES);
 
     let activeSiteIds: Array<Id<ConstructionSite>> = [];
     for(let task of active_tasks){

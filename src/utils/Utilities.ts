@@ -13,3 +13,6 @@ export function findNearestInTime(start: RoomPosition, goals: Array<Creep | Stru
       return winner;
 
 }
+
+
+

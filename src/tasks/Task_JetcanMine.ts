@@ -1,7 +1,6 @@
-import { Position, SourceNode } from "source-map";
 import { WorkerType } from "WorkerType";
 import { WorkerTypes } from "WorkerTypes";
-import { Task } from "./Task";
+import { Task } from "Task";
 
 
 

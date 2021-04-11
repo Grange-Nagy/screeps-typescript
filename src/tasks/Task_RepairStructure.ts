@@ -1,11 +1,10 @@
-import { Position, SourceNode } from "source-map";
 import { WorkerType } from "WorkerType";
 import { WorkerTypes } from "WorkerTypes";
-import { Task } from "./Task";
+import { Task } from "Task";
 
 
 
-export class Task_BuildStructure implements Task {
+export class Task_RepairStructure implements Task {
     name: string;
     status: string;
     taskLocation: RoomPosition;
@@ -17,65 +16,67 @@ export class Task_BuildStructure implements Task {
     estRemainingTime: number;
     resourceCost:      number;
 
-
   //-------------------------------------------
 
-    building:                   boolean;
-    constructionSiteID:         Id<ConstructionSite>;
+  repairing:                   boolean;
+    structureID:         Id<AnyStructure>;
+    initHits:                   number;
     timePassed:                 number;
-    bootstrap: boolean;
 
-  constructor(constructionSite: ConstructionSite, priority: number) {
-    this.name = "build_structure";
+  constructor(repairSite: AnyStructure, priority: number) {
+    this.name = "repair_structure";
     this.status = "HALTED";
-    this.taskLocation = constructionSite.pos;
-    this.taskDestination = constructionSite.pos;
+    this.taskLocation = repairSite.pos;
+    this.taskDestination = repairSite.pos;
     this.priority = priority;
     this.isRepeatable = true;
     this.requireResource = false;
     this.validWorkers = WorkerTypes.filter(w => w.categories.includes("builder"));
-    this.estRemainingTime = (constructionSite.progressTotal/5);                   //really rough estimation
+    this.estRemainingTime = (repairSite.hitsMax - repairSite.hits);                   //really rough estimation
 
-    this.building = false;
-    this.constructionSiteID = constructionSite.id;
+    this.repairing = false;
+    this.structureID = repairSite.id;
+    this.initHits = repairSite.hits;
     this.timePassed = 0;
-    this.bootstrap = false;
-    this.resourceCost = constructionSite.progressTotal;
+    this.resourceCost = (repairSite.hitsMax - repairSite.hits)/100;
   }
 
 
 
 }
 
-export function runTask_BuildStructure(taskOwner: Creep, task: Task_BuildStructure) {
+export function runTask_RepairStructure(taskOwner: Creep, task: Task_RepairStructure) {
 
 
     //this is utterly fucking retarded
-    let maybeSite = Game.getObjectById(task.constructionSiteID);
+    let maybeSite = Game.getObjectById(task.structureID);
     if(maybeSite){
-        task.resourceCost = maybeSite.progressTotal - maybeSite.progress;
+
+        task.resourceCost = (maybeSite.hitsMax - maybeSite.hits)/100;
+
         let dest = new RoomPosition(task.taskLocation.x, task.taskLocation.y, task.taskLocation.roomName);
-
-        if(task.building && taskOwner.store[RESOURCE_ENERGY] == 0){
-            task.building = false;
+        if(task.repairing && taskOwner.store[RESOURCE_ENERGY] == 0){
+            task.repairing = false;
         }
-        if(!task.building && taskOwner.store.getFreeCapacity() == 0){
-            task.building = true;
+        if(!task.repairing && taskOwner.store.getFreeCapacity() == 0){
+            task.repairing = true;
         }
-
-        if(task.building){
+        //console.log("err");
+        if(task.repairing){
             if (taskOwner.pos.isNearTo(dest)){
                 task.status = "RUNNING";
-                let err = taskOwner.build(maybeSite);
-                if(err != 0 ){
-                    console.log("build err " + err);
+                let err = taskOwner.repair(maybeSite);
+                if(err != 0){
+                    console.log("repair err: " + err);
                 }
+
             }else{
-                if(taskOwner.travelTo(dest) != 0){
+                let err = taskOwner.travelTo(dest);
+                if(err != 0){
+                    console.log("err travel repair: " + err);
                     task.status = "HALTED";
                 }else{
-                    //console.log("debug");
-                    task.status = "RUNNING";
+                task.status = "RUNNING";
                 }
             }
         }else{
@@ -84,12 +85,7 @@ export function runTask_BuildStructure(taskOwner: Creep, task: Task_BuildStructu
                 if (taskOwner.pos.isNearTo(source.pos)){
                     let errCode = taskOwner.withdraw(source,RESOURCE_ENERGY);
                     if(errCode != 0 ){
-                        if(errCode == -6){
-                            //low on energy
-                        }else{
-                            console.log("build withdraw err " + errCode);
-                        }
-
+                        console.log("err witdrawl reapair" + errCode);
                     }
                 }else{
                     if(taskOwner.travelTo(source.pos) != 0){
@@ -100,24 +96,24 @@ export function runTask_BuildStructure(taskOwner: Creep, task: Task_BuildStructu
                     }
                 }
             }else{
-                console.log(taskOwner.name + " failed to find path to source to build " + task.constructionSiteID);
-                task.bootstrap = true;
+                console.log(taskOwner.name + " failed to find path to source to build " + task.structureID);
             }
         }
 
 
 
         task.timePassed++;
-        let progressPercent = maybeSite.progress/maybeSite.progressTotal
+        let progressPercent = (maybeSite.hits)/(maybeSite.hitsMax - task.initHits)
         if (progressPercent > 0.15){
             task.estRemainingTime = (1 - progressPercent) / (progressPercent / task.timePassed);
         }
 
-
+        if(maybeSite.hits == maybeSite.hitsMax){
+            task.status = "COMPLETED";
+        }
 
     }else{
         task.status = "COMPLETED";
-
 
     }
 

@@ -1,7 +1,7 @@
 import {WorkerType} from "./WorkerType";
 
-const part_costs = [100,50,50,80,150,250,600,10];
-const part_names = ["WORK","MOVE","CARRY","ATTACK","RANGED_ATTACK","HEAL","CLAIM","TOUGH"]
+//const part_costs = [100,50,50,80,150,250,600,10];
+//const part_names = ["WORK","MOVE","CARRY","ATTACK","RANGED_ATTACK","HEAL","CLAIM","TOUGH"]
 
 export const WorkerTypes: Array<WorkerType> = [
     //spawner
@@ -16,7 +16,7 @@ export const WorkerTypes: Array<WorkerType> = [
     //builder
     new WorkerType("small_builder", ["builder"], [2,4,2,0,0,0,0,0]),
     new WorkerType("large_builder", ["builder"], [3,6,3,0,0,0,0,0]),
-    new WorkerType("mondo_builder", ["builder"],  [4,8,4,0,0,0,0,0]),
+    //new WorkerType("mondo_builder", ["builder"],  [4,8,4,0,0,0,0,0]),
 
     //miner
     new WorkerType("small_jetcan_miner", ["miner"], [3,1,1,0,0,0,0,0]),

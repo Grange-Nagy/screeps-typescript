@@ -1,7 +1,6 @@
-import { Position } from "source-map";
 import { WorkerType } from "WorkerType";
 import { WorkerTypes } from "WorkerTypes";
-import { Task } from "./Task";
+import { Task } from "Task";
 
 export class Task_SpawnCreep implements Task {
     name: string; //name of task

@@ -1,9 +1,8 @@
 import { Task } from "Task";
-import { Task_BuildStructure } from "Task_BuildStructure";
-import { Task_RepairStructure } from "Task_RepairStructure";
+import { Task_RepairStructure } from "tasks/Task_RepairStructure";
 
 
-export function createRepairTasks(spawn: StructureSpawn,
+export function manageRepairTasks(spawn: StructureSpawn,
                                   active_tasks: Array<[Task, (Creep | StructureSpawn)]>,
                                   enqueued_tasks: Array<[Task, (Creep | StructureSpawn)]>): Array<Task>{
 

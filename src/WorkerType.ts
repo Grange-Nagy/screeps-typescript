@@ -1,4 +1,4 @@
-import * as _ from "lodash";
+
 
 const part_costs = [100,50,50,80,150,250,600,10];
 const part_names: Array<BodyPartConstant> = ["work","move","carry","attack","ranged_attack","heal","claim","tough"]

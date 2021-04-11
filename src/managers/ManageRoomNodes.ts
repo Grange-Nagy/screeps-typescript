@@ -1,6 +1,5 @@
-import { SourceNode } from "source-map";
 import { Task } from "Task";
-import { Task_JetcanMine } from "Task_JetcanMine";
+import { Task_JetcanMine } from "tasks/Task_JetcanMine";
 
 
 
