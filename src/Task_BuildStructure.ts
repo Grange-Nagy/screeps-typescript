@@ -15,6 +15,7 @@ export class Task_BuildStructure implements Task {
     isRepeatable: boolean;
     validWorkers: Array<WorkerType>;
     estRemainingTime: number;
+    resourceCost:      number;
 
 
   //-------------------------------------------
@@ -33,12 +34,13 @@ export class Task_BuildStructure implements Task {
     this.isRepeatable = true;
     this.requireResource = false;
     this.validWorkers = WorkerTypes.filter(w => w.categories.includes("builder"));
-    this.estRemainingTime = (constructionSite.progressTotal);                   //really rough estimation
+    this.estRemainingTime = (constructionSite.progressTotal/5);                   //really rough estimation
 
     this.building = false;
     this.constructionSiteID = constructionSite.id;
     this.timePassed = 0;
     this.bootstrap = false;
+    this.resourceCost = constructionSite.progressTotal;
   }
 
 
@@ -51,6 +53,7 @@ export function runTask_BuildStructure(taskOwner: Creep, task: Task_BuildStructu
     //this is utterly fucking retarded
     let maybeSite = Game.getObjectById(task.constructionSiteID);
     if(maybeSite){
+        task.resourceCost = maybeSite.progressTotal - maybeSite.progress;
         let dest = new RoomPosition(task.taskLocation.x, task.taskLocation.y, task.taskLocation.roomName);
 
         if(task.building && taskOwner.store[RESOURCE_ENERGY] == 0){
@@ -61,14 +64,18 @@ export function runTask_BuildStructure(taskOwner: Creep, task: Task_BuildStructu
         }
 
         if(task.building){
-            if (taskOwner.pos.isEqualTo(dest)){
+            if (taskOwner.pos.isNearTo(dest)){
                 task.status = "RUNNING";
-                taskOwner.build(maybeSite);
+                let err = taskOwner.build(maybeSite);
+                if(err != 0 ){
+                    console.log("build err " + err);
+                }
             }else{
                 if(taskOwner.travelTo(dest) != 0){
                     task.status = "HALTED";
                 }else{
-                task.status = "RUNNING";
+                    //console.log("debug");
+                    task.status = "RUNNING";
                 }
             }
         }else{
@@ -77,7 +84,12 @@ export function runTask_BuildStructure(taskOwner: Creep, task: Task_BuildStructu
                 if (taskOwner.pos.isNearTo(source.pos)){
                     let errCode = taskOwner.withdraw(source,RESOURCE_ENERGY);
                     if(errCode != 0 ){
-                        console.log("build withdraw err " + errCode);
+                        if(errCode == -6){
+                            //low on energy
+                        }else{
+                            console.log("build withdraw err " + errCode);
+                        }
+
                     }
                 }else{
                     if(taskOwner.travelTo(source.pos) != 0){

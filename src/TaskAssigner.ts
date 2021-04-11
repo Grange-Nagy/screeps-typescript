@@ -5,13 +5,14 @@ import { findNearestInTime } from "Utilities";
 
 export function assignTasks(newTasks: Array<Task>, currentWorkers: Array<Creep | StructureSpawn>,
                             active_tasks: Array<[Task, (Creep | StructureSpawn)]>,
-                            enqueued_tasks: Array<[Task, (Creep | StructureSpawn)]> ): Array<Task>{
+                            enqueued_tasks: Array<[Task, (Creep | StructureSpawn)]>): Array<Task>{
     var unassignedTasks: Array<Task> = [];
 
     newTasks.sort(((a: Task, b: Task) => a.priority > b.priority ? -1 : 1));
     for(let task of newTasks){
-        //checks valid worker types in specified ordering
-      //console.log(task.name);
+    //checks valid worker types in specified ordering
+      //console.log("Task: " + task.name);
+      var isAssigned = false;
 
 
         for(let valWorker of task.validWorkers){
@@ -22,22 +23,10 @@ export function assignTasks(newTasks: Array<Task>, currentWorkers: Array<Creep |
               continue;
             }else{
               if (valWorker.name == workman.memory.type.name){
-                  /*
-                  if (task.requireResource){
-                      //some function to test if resource is avaliable for task on worker
-                      //for the time being just don't do it
-                      if(workman instanceof StructureSpawn && task instanceof Task_SpawnCreep){
-                          if(workman.room.energyAvailable > task.creep.cost){
-                            avaliableValidWorkers.push(workman);
-                            continue;
-                          }
-                      }
-                      //console.log("Task: " + workman.name + " lacks the resources to execute task: " + task.name);
-                  }else{
-                    avaliableValidWorkers.push(workman);
+                  if(workman.memory.tasks.length && workman.memory.tasks.length > 10){
+                    continue;
                   }
-                  */
-                  avaliableValidWorkers.push(workman);
+                avaliableValidWorkers.push(workman);
               }
             }
 
@@ -64,6 +53,7 @@ export function assignTasks(newTasks: Array<Task>, currentWorkers: Array<Creep |
               //TODO call interupt function on active task here
               winner[0].memory.tasks.unshift(task);
               active_tasks.push([task,winner[0]]);
+              isAssigned = true;
               break;
             }
             //at 3, find nearest worker (in time) inserting after current if not idle
@@ -85,12 +75,14 @@ export function assignTasks(newTasks: Array<Task>, currentWorkers: Array<Creep |
                 }
                 let totalCost = (path.cost * potentialWorker.memory.type.unburdened_speed) + estTimeUntilFree;
                 let time_to_live = 0;
-                if(potentialWorker instanceof Creep){
+                if(potentialWorker instanceof Creep && task.estRemainingTime < 99999){
                   if(potentialWorker.ticksToLive){
                     time_to_live = potentialWorker.ticksToLive;
                   }else{time_to_live = 0;}
-                }else{time_to_live = 99999999;}
-                if(totalCost <= winner[1] && totalCost < time_to_live){
+                }else{time_to_live = 99999999999;}
+
+                //console.log("total cost: " + totalCost + ", winner[1]: " + winner[1] + ", totalCost + task.estRemainingTime: " + (totalCost + task.estRemainingTime) + ", time to live: " + time_to_live);
+                if(totalCost <= winner[1] && totalCost + task.estRemainingTime < time_to_live){
                   winner[0] = potentialWorker;
                   winner[1] = totalCost;
                 }
@@ -101,20 +93,24 @@ export function assignTasks(newTasks: Array<Task>, currentWorkers: Array<Creep |
               if(winner[1] > 99999){
                 continue;
               }
-              console.log("WINNER cost: " + winner[1]);
+              //console.log("WINNER cost: " + winner[1]);
 
               if(winner[0].memory.tasks?.length > 0){
                 if(winner[0].memory.tasks[0].priority == 0){
                     //TODO call interupt function on active task here
                     winner[0].memory.tasks.unshift(task);
                     active_tasks.push([task,winner[0]]);
+                    isAssigned = true;
                     break;
                 }
                 winner[0].memory.tasks.splice(1,0,task);
                 enqueued_tasks.push([task,winner[0]]);
+                isAssigned = true;
+                break;
               }else{
                 winner[0].memory.tasks.push(task);
                 active_tasks.push([task,winner[0]]);
+                isAssigned = true;
               }
               break;
 
@@ -149,28 +145,29 @@ export function assignTasks(newTasks: Array<Task>, currentWorkers: Array<Creep |
 
 ///////////////////////////////////////////////////////
                 let time_to_live = 0;
-                if(potentialWorker instanceof Creep){
+                if(potentialWorker instanceof Creep  && task.estRemainingTime < 99999){
                   if(potentialWorker.ticksToLive){
 
                     time_to_live = potentialWorker.ticksToLive;
                   }else{time_to_live = 0;}
-                }else{time_to_live = 99999999;}
+                }else{time_to_live = 9999999999;}
 
                 let totalCost = (path.cost * potentialWorker.memory.type.unburdened_speed) + estTimeUntilFree;
+                //console.log("total cost: " + totalCost + ", winner[1]: " + winner[1] + ", totalCost + task.estRemainingTime: " + (totalCost + task.estRemainingTime) + ", time to live: " + time_to_live);
                 if(totalCost <= winner[1] && totalCost + task.estRemainingTime < time_to_live){
                   winner[0] = potentialWorker;
                   winner[1] = totalCost;
                   //console.log("Winner found in task " + task.name);
                 }else{
-                  //console.log("total cost: " + totalCost + ", winner[1]: " + winner[1] + ", totalCost + task.estRemainingTime: " + (totalCost + task.estRemainingTime) + ", time to live: " + time_to_live);
+
                 }
               }
-              //////////////////////////////////////////////
+              //////////////////////////////////////////
 
               if(winner[1] > 99999){
                 continue;
               }
-              console.log("WINNER cost: " + winner[1]);
+              //console.log("WINNER cost: " + winner[1]);
 
               if(winner[0].memory.tasks?.length > 0){
                 let zeroIndex = winner[0].memory.tasks.findIndex(ele => ele.priority == 0);
@@ -181,14 +178,18 @@ export function assignTasks(newTasks: Array<Task>, currentWorkers: Array<Creep |
                     }else{
                         enqueued_tasks.push([task,winner[0]]);
                     }
+                    isAssigned = true;
                     winner[0].memory.tasks.splice(zeroIndex,0,task);
                     break;
                 }
                 winner[0].memory.tasks.push(task);
                 enqueued_tasks.push([task,winner[0]]);
+                isAssigned = true;
               }else{
                 winner[0].memory.tasks.push(task);
                 active_tasks.push([task,winner[0]]);
+                isAssigned = true;
+                break;
               }
               break;
             }
@@ -204,20 +205,30 @@ export function assignTasks(newTasks: Array<Task>, currentWorkers: Array<Creep |
               let winner: [(Creep | StructureSpawn), number] = findNearestInTime(task.taskLocation, idleValidWorkers);
               winner[0].memory.tasks.push(task);
               active_tasks.push([task,winner[0]]);
+              isAssigned = true;
+              break;
             }
 
             default:{
               console.log("Task: " + task + " has undefined prio");
             }
           }
+          if(isAssigned){
+            //console.log("WORKER FOUND FOR " + task.name);
+            break;
+          }
+
         }
         //task failed to get assigned
-        //unassignedTasks.push(task);
-        if(task.priority != 0){
+        unassignedTasks.push(task);
+        if(task.priority != 0 && !isAssigned){
             for (var valType of task.validWorkers){
-                if(!(valType.categories.includes("spawner"))){
+                if(!(valType.categories.includes("spawner")) && Game.rooms[task.taskLocation.roomName].energyAvailable > valType.cost){
+                    if(valType.name == "small_spawner") {break;}
+                    //console.log("room energy " + Game.rooms[task.taskLocation.roomName].energyAvailable + ", crep cost: " + valType.cost);
                     //console.log("attempting to spin up a " + valType.name + "because failed to find worker for:= " + JSON.stringify(task));
                     newTasks.push(new Task_SpawnCreep(task.taskLocation,1,false,valType));
+                    break;
                 }
             }
         }

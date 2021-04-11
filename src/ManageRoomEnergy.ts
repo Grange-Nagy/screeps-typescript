@@ -46,8 +46,10 @@ export function manageRoomEnergy(spawn: StructureSpawn, active_tasks: Array<[Tas
 
     //assign energy need to source
     var prio = 2;
-    if (spawn.room.energyCapacityAvailable < 100){
+    if (spawn.room.energyAvailable < 400){
         prio = 3;
+    }else if(spawn.room.energyAvailable < 100){
+        prio = 4;
     }
     //console.log("Need energy: " + JSON.stringify(needEnergy));
 
@@ -64,11 +66,11 @@ export function manageRoomEnergy(spawn: StructureSpawn, active_tasks: Array<[Tas
         }
     }
 
-
     for(let need of needEnergy){
 
         if(!activeSiteIds.includes(need.id) &&
            !queuedSiteIds.includes(need.id)){
+            //console.log("debug");
             let container = need.pos.findClosestByPath(spawn.room.find(FIND_STRUCTURES).filter(struct => struct.structureType == STRUCTURE_CONTAINER));
             let needed = 0;
             if(need instanceof StructureSpawn){
@@ -78,7 +80,7 @@ export function manageRoomEnergy(spawn: StructureSpawn, active_tasks: Array<[Tas
             }else{
                 continue;
             }
-            if(needed < 50){
+            if(needed <= 0){
                 //console.log("somethings fucked above this");
                 continue;
             }
@@ -88,7 +90,7 @@ export function manageRoomEnergy(spawn: StructureSpawn, active_tasks: Array<[Tas
             //console.log("need: " + needed)
             //let capacityRounded50 = Math.round((need.store.getFreeCapacity(RESOURCE_ENERGY))/50)*50;
             if(container){
-                newTasks.push(new Task_MoveItem((<StructureContainer>container).id, need.id, needed, RESOURCE_ENERGY, 2));
+                newTasks.push(new Task_MoveItem((<StructureContainer>container).id, need.id, needed, RESOURCE_ENERGY, prio));
             }
 
          }

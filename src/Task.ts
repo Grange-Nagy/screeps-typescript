@@ -19,6 +19,7 @@ export interface Task{
     validWorkers:       Array<WorkerType>;  //list of valid worker types for this task, in descending order of priority {mostDesired, ... , leastDesired}
     subtasks?:          Array<Task>;        //list of tasks (maybe think about preventing recursion here by making sure isTaskComposition is false for all subtasks), priority should be the same for all subtasks
     estRemainingTime:  number;             //estimated duration of task remaining, initalized as time from
+    resourceCost:      number;              //ammount of resources used by task
 
     //interrupt?(taskOwner: AnyCreep | AnyStructure):       void;               //handler to interrupt, check if exists with if(task.interrupt){task.interrupt();}else{what happens if something can't be interrupt}
     //run(taskOwner: AnyCreep | AnyStructure):   void;

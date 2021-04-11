@@ -22,7 +22,7 @@ export function createRepairTasks(spawn: StructureSpawn,
         }
     }
 
-    let structures = spawn.room.find(FIND_STRUCTURES).filter(struct => (struct.hitsMax - struct.hits) > 500);
+    let structures = spawn.room.find(FIND_STRUCTURES).filter(struct => (struct.hitsMax - struct.hits) > 500 && struct.structureType != STRUCTURE_CONTAINER);
 
 
     for( let site of structures){
@@ -30,7 +30,7 @@ export function createRepairTasks(spawn: StructureSpawn,
            !queuedSiteIds.includes(site.id)){
 
 
-            newTasks.push(new Task_RepairStructure(site, 2));
+            newTasks.push(new Task_RepairStructure(site, 1));
          }
     }
 

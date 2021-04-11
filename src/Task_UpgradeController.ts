@@ -5,7 +5,7 @@ import { Task } from "./Task";
 
 
 
-export class Task_MoveItem implements Task {
+export class Task_UpgradeController implements Task {
     name: string;
     status: string;
     taskLocation: RoomPosition;
@@ -20,31 +20,31 @@ export class Task_MoveItem implements Task {
   //-------------------------------------------
 
     sourceID:                 Id<AnyStoreStructure>;
-    destinationID:            Id<AnyStoreStructure>;
-    ammount:                  number;
+    destinationID:            Id<StructureController>;
+    //ammount:                  number;
     itemType:                 ResourceConstant;
-    hasItems:                 boolean;
+    hasEnergy:                 boolean;
     //beenToSource:                 boolean;
 
 
-  constructor(sourceID: Id<AnyStoreStructure>, destinationID: Id<AnyStoreStructure>, ammount: number, itemType: ResourceConstant, priority: number) {
-    this.name = "move_item";
+  constructor(sourceID: Id<AnyStoreStructure>, destinationID: Id<StructureController>, priority: number) {
+    this.name = "upgrade_controller";
     this.status = "HALTED";
     this.taskLocation = (Game.getObjectById(sourceID) as AnyStoreStructure).pos;
-    this.taskDestination = (Game.getObjectById(destinationID) as AnyStoreStructure).pos;
+    this.taskDestination = (Game.getObjectById(destinationID) as StructureController).pos;
     this.priority = priority;
     this.isRepeatable = true;
     this.requireResource = false;
-    this.validWorkers = WorkerTypes.filter(w => w.categories.includes("hauler" || "builder") && w.CARRY*50 >= ammount).sort((a,b) => (a.categories.includes("hauler") ? 1 : (a.CARRY > b.CARRY) ? 1 : -1));
+    this.validWorkers = WorkerTypes.filter(w => w.categories.includes("builder")).sort(((a, b) => a.partSum > b.partSum ? -1 : 1)); //sort decending
     //console.log("valid workers in move constructor: " + JSON.stringify(this.validWorkers));
-    this.estRemainingTime = (PathFinder.search((Game.getObjectById(sourceID) as AnyStoreStructure).pos, (Game.getObjectById(destinationID) as AnyStoreStructure).pos)).cost;    //assuming speed 1
+    this.estRemainingTime = (PathFinder.search((Game.getObjectById(sourceID) as AnyStoreStructure).pos, (Game.getObjectById(destinationID) as StructureController).pos)).cost;    //assuming speed 1
 
     this.sourceID = sourceID;
     this.destinationID = destinationID;
-    this.ammount = ammount;
-    this.itemType = itemType;
-    this.hasItems = false;
-    this.resourceCost = ammount;
+    //this.ammount = ammount;
+    this.itemType = RESOURCE_ENERGY;
+    this.hasEnergy = false;
+    this.resourceCost = 100;          //estimate
     //this.beenToSource = false;
   }
 
@@ -52,7 +52,7 @@ export class Task_MoveItem implements Task {
 
 }
 
-export function runTask_MoveItem(taskOwner: Creep, task: Task_MoveItem) {
+export function runTask_UpgradeController(taskOwner: Creep, task: Task_UpgradeController) {
 
     //this is utterly fucking retarded
     let source = Game.getObjectById(task.sourceID);
@@ -60,27 +60,24 @@ export function runTask_MoveItem(taskOwner: Creep, task: Task_MoveItem) {
     if(source && dest){
 
 
-      //console.log("movecreep stored" + taskOwner.store[task.itemType] + ", requested: " + task.ammount);
-      if(!task.hasItems && taskOwner.store[task.itemType] >= task.ammount){
-          task.hasItems = true;
+      //console.log("upgradecreep stored" + taskOwner.store.energy + ", max: " + taskOwner.memory.type.CARRY*50);
+      if(!task.hasEnergy && taskOwner.memory.type.CARRY*50 - taskOwner.store.energy == 0){
+          task.hasEnergy = true;
       }
 
-      if(task.hasItems && taskOwner.store[task.itemType] < task.ammount){
-        task.hasItems = false;
-      }
 
-      if(task.hasItems){
+
+      if(task.hasEnergy){
         task.resourceCost = 0;
-          if (taskOwner.pos.isNearTo(dest)){
+        let err = taskOwner.upgradeController(dest);
+          if (err != ERR_NOT_IN_RANGE){
               task.status = "RUNNING";
-              let err = taskOwner.transfer(dest,task.itemType,task.ammount);
               if(err != 0){
-                if(err == -8){
+                if(err == -6){
                   taskOwner.transfer(dest,task.itemType);
                   task.status = "COMPLETED";
                 }else{
-
-                  console.log("CREEP STUCK TRANSFFER: " + err)
+                  console.log("CREEP STUCK UPGRADE: " + err)
                   task.status = "HALTED";
                 }
 
@@ -96,9 +93,9 @@ export function runTask_MoveItem(taskOwner: Creep, task: Task_MoveItem) {
               }
           }
       }else{
-          task.resourceCost = task.ammount;
+        task.resourceCost = taskOwner.memory.type.CARRY*50;
           if (taskOwner.pos.isNearTo(source.pos)){
-              let errCode = taskOwner.withdraw(source,task.itemType,task.ammount);
+              let errCode = taskOwner.withdraw(source,task.itemType);
               if(errCode != 0 ){
                 if(errCode == -8){
                   taskOwner.withdraw(source,task.itemType)
@@ -123,11 +120,16 @@ export function runTask_MoveItem(taskOwner: Creep, task: Task_MoveItem) {
               }
           }
       }
+      if(task.hasEnergy && taskOwner.store.energy == 0){
+        task.status = "COMPLETED";
+        task.hasEnergy = false;
+        taskOwner.say("done");
+      }
 
 
 
     }else{
-        console.log("Worker carrying items between " + task.sourceID + " and " + task.destinationID + " cannot find one (destroyed?)");
+        console.log("Upgrader carrying items between " + task.sourceID + " and " + task.destinationID + " cannot find one (destroyed?)");
         task.status = "COMPLETED";
     }
 

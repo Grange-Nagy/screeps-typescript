@@ -15,6 +15,7 @@ export class Task_RepairStructure implements Task {
     isRepeatable: boolean;
     validWorkers: Array<WorkerType>;
     estRemainingTime: number;
+    resourceCost:      number;
 
   //-------------------------------------------
 
@@ -38,6 +39,7 @@ export class Task_RepairStructure implements Task {
     this.structureID = repairSite.id;
     this.initHits = repairSite.hits;
     this.timePassed = 0;
+    this.resourceCost = (repairSite.hitsMax - repairSite.hits)/100;
   }
 
 
@@ -51,7 +53,7 @@ export function runTask_RepairStructure(taskOwner: Creep, task: Task_RepairStruc
     let maybeSite = Game.getObjectById(task.structureID);
     if(maybeSite){
 
-
+        task.resourceCost = (maybeSite.hitsMax - maybeSite.hits)/100;
 
         let dest = new RoomPosition(task.taskLocation.x, task.taskLocation.y, task.taskLocation.roomName);
         if(task.repairing && taskOwner.store[RESOURCE_ENERGY] == 0){
@@ -62,10 +64,13 @@ export function runTask_RepairStructure(taskOwner: Creep, task: Task_RepairStruc
         }
         //console.log("err");
         if(task.repairing){
-            if (taskOwner.pos.isEqualTo(dest)){
+            if (taskOwner.pos.isNearTo(dest)){
                 task.status = "RUNNING";
-                taskOwner.repair(maybeSite);
-                //console.log("err");
+                let err = taskOwner.repair(maybeSite);
+                if(err != 0){
+                    console.log("repair err: " + err);
+                }
+
             }else{
                 let err = taskOwner.travelTo(dest);
                 if(err != 0){

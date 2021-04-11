@@ -13,6 +13,7 @@ export class Task_SpawnCreep implements Task {
     isRepeatable: boolean;
     validWorkers: Array<WorkerType>;
     estRemainingTime: number;
+    resourceCost:      number;
 
   //-------------------------------------------
 
@@ -29,6 +30,7 @@ export class Task_SpawnCreep implements Task {
     this.validWorkers = WorkerTypes.filter(w => w.categories.includes("spawner"));
     this.estRemainingTime = 3 * creep.partSum;
     this.creep = creep;
+    this.resourceCost = 0;
   }
 
 
@@ -59,7 +61,12 @@ export function runTask_SpawnCreep(taskOwner: StructureSpawn, task: Task_SpawnCr
                 if (ret_code == 0){
                     task.status = "RUNNING";
                 }else{
-                    task.status = "HALTED";
+                    if(ret_code == -6){
+                        task.status = "COMPLETED";
+                    } else{
+                        task.status = "HALTED";
+                    }
+
                 }
             }
         }

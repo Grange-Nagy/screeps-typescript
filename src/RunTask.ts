@@ -4,6 +4,7 @@ import { runTask_JetcanMine, Task_JetcanMine } from "Task_JetcanMine";
 import { runTask_MoveItem, Task_MoveItem } from "Task_MoveItem";
 import { runTask_RepairStructure, Task_RepairStructure } from "Task_RepairStructure";
 import { runTask_SpawnCreep, Task_SpawnCreep } from "Task_SpawnCreep";
+import { runTask_UpgradeController, Task_UpgradeController } from "Task_UpgradeController";
 
 export function runTask(undefTaskOwner: AnyCreep | AnyStructure, undefTask: Task){
 
@@ -59,6 +60,14 @@ export function runTask(undefTaskOwner: AnyCreep | AnyStructure, undefTask: Task
             if (undefTaskOwner instanceof Creep){
                 let taskOwner: Creep = undefTaskOwner;
                 runTask_MoveItem(taskOwner,task);
+            }
+            return 0;
+        }
+        case("upgrade_controller"):{
+            let task = undefTask as Task_UpgradeController;
+            if (undefTaskOwner instanceof Creep){
+                let taskOwner: Creep = undefTaskOwner;
+                runTask_UpgradeController(taskOwner,task);
             }
             return 0;
         }

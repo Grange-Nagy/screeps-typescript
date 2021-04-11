@@ -17,42 +17,57 @@ export function manageRoomNodes(spawn: StructureSpawn, nodes: Array<Source>, act
           taskManagerMemory.sourceContainerAssignments.push([nodes[0].id,containerLocation]);
         }
 
-
-
         let containerEntry = taskManagerMemory.sourceContainerAssignments.find(e => e[0] == nodes[i].id);
+        let isAssigned = false;
         if(containerEntry){
-          let containerPos: RoomPosition = containerEntry[1];
-          let isAssigned = false;
-          //create jetcan mining tasks
           for(let task of active_tasks){
             if (task[0] == undefined){continue;}
-            if(task[0].taskLocation.x === containerPos.x && task[0].taskLocation.y === containerPos.y && task[0].taskLocation.roomName === containerPos.roomName && task[0].name === "jetcan_mine"){
+            if(task[0].name == "jetcan_mine" && (task[0] as Task_JetcanMine).taskLocation.x == containerEntry[1].x && (task[0] as Task_JetcanMine).taskLocation.y == containerEntry[1].y){
               isAssigned = true;
-              //console.log("no need for new miner" + JSON.stringify(task));
+              //console.log("debug");
               break;
+
             }
           }
+        }else{
+          continue;
+        }
 
 
+
+          var container:unknown = null;
           let isContainer = false;
           for(let containerName in Game.structures){
             if (Game.structures[containerName].structureType == STRUCTURE_CONTAINER){
-              let container = Game.structures[containerName];
-              if (containerPos.isEqualTo(container.pos)){
+              //console.log("debug");
+              container = Game.structures[containerName];
+              if (containerEntry[1].isEqualTo((container as StructureContainer).pos)){
                 isContainer = true;
                 break;
               }
             }
           }
-          if (!(isAssigned)){
 
-            newTasks.push(new Task_JetcanMine(nodes[i],containerEntry[1]));
+          let containersInRoom: Array<StructureContainer>  = (spawn.room.find(FIND_STRUCTURES).filter(
+            struct => (struct.structureType == STRUCTURE_CONTAINER))) as Array<StructureContainer>;
+
+
+          //console.log("debug1");
+          if (!(isAssigned)){
+            //console.log("debug2");
+            for(let can of containersInRoom){
+              //console.log(can.pos.x + ", " + can.pos.y + " vs " +  + ", " + containerEntry[1].y);
+              if(can.pos.x == containerEntry[1].x && can.pos.y == containerEntry[1].y){
+                console.log("creating jectcan task");
+                newTasks.push(new Task_JetcanMine(nodes[i],containerEntry[1], can));
+              }
+            }
+
           }
           if(!(isContainer)){
-            Game.rooms[containerPos.roomName].createConstructionSite(containerPos.x,containerPos.y,STRUCTURE_CONTAINER);
+            Game.rooms[containerEntry[1].roomName].createConstructionSite(containerEntry[1].x,containerEntry[1].y,STRUCTURE_CONTAINER);
           }
         }
 
-      }
       return newTasks;
 }

@@ -11,13 +11,15 @@ export const WorkerTypes: Array<WorkerType> = [
     //hauler
     new WorkerType("small_hauler", ["hauler"], [0,1,1,0,0,0,0,0]),
     new WorkerType("medium_hauler", ["hauler"], [0,2,2,0,0,0,0,0]),
-    new WorkerType("large_hauler", ["hauler"], [0,3,3,0,0,0,0,0]),
+    //new WorkerType("large_hauler", ["hauler"], [0,3,3,0,0,0,0,0]),
 
     //builder
     new WorkerType("small_builder", ["builder"], [2,4,2,0,0,0,0,0]),
-    //new WorkerType("small_long_range_builder", ["builder"],  [1,3,2,0,0,0,0,0]),
+    new WorkerType("large_builder", ["builder"], [3,6,3,0,0,0,0,0]),
+    new WorkerType("mondo_builder", ["builder"],  [4,8,4,0,0,0,0,0]),
 
     //miner
-    new WorkerType("small_jetcan_miner", ["miner"], [3,1,0,0,0,0,0,0])
-    //new WorkerType("large_miner", ["miner"], [2,1,1,0,0,0,0,0])
+    new WorkerType("small_jetcan_miner", ["miner"], [3,1,1,0,0,0,0,0]),
+    new WorkerType("large_miner", ["miner"], [5,1,1,0,0,0,0,0]),
+    new WorkerType("mondo_miner", ["miner"], [7,1,1,0,0,0,0,0])
     ]
