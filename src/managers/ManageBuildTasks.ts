@@ -34,6 +34,7 @@ export function manageBuildTasks(spawn: StructureSpawn,
             if (sourceDest != null){
                 let sourceIndex = roomContainers.findIndex(x => x[2].isEqualTo(sourceDest as RoomPosition));
                 if(roomContainers[sourceIndex][1] > _.min([site.progressTotal, 500]) + 500){
+                    console.log("build task est container stored: " + roomContainers[sourceIndex][1]);
                     newTasks.push(new Task_BuildStructure(roomContainers[sourceIndex][0], site, 3));
                     break;
                 }

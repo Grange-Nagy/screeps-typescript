@@ -100,7 +100,7 @@ export function runTask_UpgradeController(taskOwner: Creep, task: Task_UpgradeCo
 
               let err = taskOwner.travelTo(dest);
               //console.log("CREEP not?: " + err)
-              if(err != 0){
+              if(err != 0 && err != -11){
                   console.log("CREEP STUCK: " + err)
                   task.status = "HALTED";
               }else{
@@ -138,7 +138,7 @@ export function runTask_UpgradeController(taskOwner: Creep, task: Task_UpgradeCo
       if(task.hasEnergy && taskOwner.store.energy == 0){
         task.status = "COMPLETED";
         task.hasEnergy = false;
-        taskOwner.say("time: " + task.estRemainingTime.toString());
+        console.log("Upgrade controller time estimation error: " + task.estRemainingTime);
       }
 
 

@@ -77,7 +77,8 @@ export function manageRoomEnergy(spawn: StructureSpawn, active_tasks: Array<[Tas
 
             if (sourceDest != null){
                 let sourceIndex = roomContainers.findIndex(x => x[2].isEqualTo(sourceDest as RoomPosition));
-                if(roomContainers[sourceIndex][1] >= needed){
+                if(roomContainers[sourceIndex][1] >= needed + 250){
+                    console.log("move task est container stored: " + roomContainers[sourceIndex][1]);
                     newTasks.push(new Task_MoveItem(roomContainers[sourceIndex][0], need.id, needed, RESOURCE_ENERGY, 3));
                     break;
                 }

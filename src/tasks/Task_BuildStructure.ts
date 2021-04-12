@@ -106,7 +106,9 @@ export function runTask_BuildStructure(taskOwner: Creep, task: Task_BuildStructu
 
                     }
                 }else{
-                    if(taskOwner.travelTo(source.pos) != 0){
+                    let errCode = taskOwner.travelTo(source.pos);
+                    if( errCode != 0){
+                        console.log("build travelTo err " + errCode);
                         task.status = "HALTED";
                     }else{
                         //console.log("x: " + source.pos.x + " y: " + source.pos.y);
@@ -130,6 +132,7 @@ export function runTask_BuildStructure(taskOwner: Creep, task: Task_BuildStructu
 
 
     }else{
+        console.log("Build time estimation error: " + task.estRemainingTime);
         task.status = "COMPLETED";
 
 

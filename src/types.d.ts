@@ -55,6 +55,7 @@ interface Creep {
 }
 
 interface CreepMemory {
+  role: any;              //TODO: Remove this
   _trav?: TravelData;
 }
 

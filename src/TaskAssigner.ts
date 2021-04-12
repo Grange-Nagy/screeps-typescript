@@ -224,8 +224,8 @@ export function assignTasks(newTasks: Array<Task>, currentWorkers: Array<Creep |
         if(task.priority != 0 && !isAssigned){
             for (var valType of task.validWorkers){
               //console.log(task.name + " attempting to spin up a " + valType.name +"; room energy " + Game.rooms[task.taskLocation.roomName].energyAvailable + ", crep cost: " + valType.cost);
-                if(!(valType.categories.includes("spawner")) && Game.rooms[task.taskLocation.roomName].energyAvailable > valType.cost){
-                    if(valType.name == "small_spawner") {break;}
+                if(!(valType.categories.includes("spawner")) && Game.rooms[task.taskLocation.roomName].energyAvailable >= valType.cost){
+                    if(valType.name == "small_spawner" || valType.name == "depreciated") {break;}
                     //console.log("room energy " + Game.rooms[task.taskLocation.roomName].energyAvailable + ", crep cost: " + valType.cost);
                     //console.log("attempting to spin up a " + valType.name + " because failed to find worker for:= " + JSON.stringify(task));
                     newTasks.push(new Task_SpawnCreep(task.taskLocation,1,false,valType));

@@ -41,6 +41,7 @@ export class Task_SpawnCreep implements Task {
 export function runTask_SpawnCreep(taskOwner: StructureSpawn, task: Task_SpawnCreep) {
 
     if (!(taskOwner.spawning) && task.status == "RUNNING"){
+        console.log("Spawn time estimation error: " + task.estRemainingTime);
         task.status = "COMPLETED";
     }else{
         if (taskOwner.spawning) {

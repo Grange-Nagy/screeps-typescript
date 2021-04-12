@@ -79,7 +79,7 @@ export const loop = ErrorMapper.wrapLoop(() => {
   //TODO: MAKE WORK FOR CONTAINERS THAT ARE NOT ENERGY
   var containerStates: Array<[Id<StructureContainer>, number, RoomPosition]> = getContainerStates(active_tasks,enqueued_tasks);
 
-  console.log("container1 est: " + containerStates[0][1] + "\tcontainer2 est: " + containerStates[1][1]);
+  //console.log("container1 est: " + containerStates[0][1] + "\tcontainer2 est: " + containerStates[1][1]);
 
   //room manager
   for(let name in Game.spawns){
@@ -100,6 +100,9 @@ export const loop = ErrorMapper.wrapLoop(() => {
       spawn.room.find(FIND_MY_STRUCTURES, { filter: struct => struct.structureType === STRUCTURE_TOWER })[0]
     );
     const enemies = spawn.room.find(FIND_HOSTILE_CREEPS);
+    if(enemies && spawn.room.controller?.safeModeAvailable){
+      spawn.room.controller?.activateSafeMode();
+    }
     if (cannon && enemies) {
       cannon.attack(enemies[0]);
     }

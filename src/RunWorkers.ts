@@ -1,5 +1,6 @@
 import { runTask } from "RunTask";
 import { Task } from "Task";
+import { WorkerType } from "WorkerType";
 import { WorkerTypes } from "WorkerTypes";
 
 
@@ -23,6 +24,14 @@ export function runWorkers(currentWorkers: Array<Creep | StructureSpawn>, active
     }
     for(let name in Game.creeps){
       let creep = Game.creeps[name];
+
+      //TODO remove
+      if (creep.memory.role){
+        creep.memory.type = WorkerTypes[1];
+        creep.memory.tasks = [];
+        creep.memory.role = null;
+      }
+
       currentWorkers.push(creep);
       if(creep.memory.tasks?.length > 0){
 

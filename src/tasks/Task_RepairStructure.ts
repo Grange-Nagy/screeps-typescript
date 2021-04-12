@@ -117,6 +117,7 @@ export function runTask_RepairStructure(taskOwner: Creep, task: Task_RepairStruc
         }
 
         if(maybeSite.hits == maybeSite.hitsMax){
+            console.log("Repair time estimation error: " + task.estRemainingTime);
             task.status = "COMPLETED";
         }
 
