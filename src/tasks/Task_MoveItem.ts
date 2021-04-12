@@ -83,7 +83,7 @@ export function runTask_MoveItem(taskOwner: Creep, task: Task_MoveItem) {
               if(err != 0){
                 if(err == -8){
                   taskOwner.transfer(dest,task.itemType);
-                  console.log("Move item time estimation error: " + task.estRemainingTime);
+                  //console.log("Move item time estimation error: " + task.estRemainingTime);
                   task.status = "COMPLETED";
                 }else{
 

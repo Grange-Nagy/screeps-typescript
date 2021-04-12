@@ -27,7 +27,7 @@ export function manageRepairTasks(spawn: StructureSpawn,
     for( let site of structures){
         if(!activeSiteIds.includes(site.id) &&
            !queuedSiteIds.includes(site.id)){
-            newTasks.push(new Task_RepairStructure(site, 1));
+            newTasks.push(new Task_RepairStructure(site, 2));
             break;
          }
     }

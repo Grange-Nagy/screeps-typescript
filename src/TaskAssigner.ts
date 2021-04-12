@@ -23,7 +23,8 @@ export function assignTasks(newTasks: Array<Task>, currentWorkers: Array<Creep |
               continue;
             }else{
               if (valWorker.name == workman.memory.type.name){
-                  if(workman.memory.tasks.length && workman.memory.tasks.length > 5){
+                  if(workman.memory.tasks.length && workman.memory.tasks.length > 4 &&
+                   !(workman.memory.tasks[0].priority < task.priority)){
                     continue;
                   }
                 avaliableValidWorkers.push(workman);
@@ -47,7 +48,7 @@ export function assignTasks(newTasks: Array<Task>, currentWorkers: Array<Creep |
           switch(prio){
             //at 4, find nearest worker and prepend to all current tasks (also needs to drop items maybe)
             case(4):{
-              //console.log("???");
+              console.log("???");
               let winner: [(Creep | StructureSpawn), number] = findNearestInTime(task.taskLocation, avaliableValidWorkers);
 
               //TODO call interupt function on active task here
@@ -121,7 +122,7 @@ export function assignTasks(newTasks: Array<Task>, currentWorkers: Array<Creep |
               //console.log(JSON.stringify(task));
               //console.log("debug " + task.taskDestination.x);
               let winner: [(Creep | StructureSpawn), number] = [avaliableValidWorkers[0], 99999999999];
-
+              //console.log(task.name);
               for(let potentialWorker of avaliableValidWorkers){
                 let path = PathFinder.search(potentialWorker.pos, task.taskLocation);
                 let estTimeUntilFree = 0
@@ -138,6 +139,7 @@ export function assignTasks(newTasks: Array<Task>, currentWorkers: Array<Creep |
                       }else{
                         let pathBetween = PathFinder.search(potentialWorker.memory.tasks[i - 1].taskDestination, potentialWorker.memory.tasks[i].taskLocation);
                         estTimeUntilFree += (pathBetween.cost * potentialWorker.memory.type.unburdened_speed) + potentialWorker.memory.tasks[i].estRemainingTime;
+                        //console.log("potentialWorker.memory.tasks?.length: " + potentialWorker.memory.tasks?.length + ", est time free: " + estTimeUntilFree);
                       }
                   }
 

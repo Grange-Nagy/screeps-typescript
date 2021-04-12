@@ -33,10 +33,15 @@ export function manageBuildTasks(spawn: StructureSpawn,
 
             if (sourceDest != null){
                 let sourceIndex = roomContainers.findIndex(x => x[2].isEqualTo(sourceDest as RoomPosition));
-                if(roomContainers[sourceIndex][1] > _.min([site.progressTotal, 500]) + 500){
-                    console.log("build task est container stored: " + roomContainers[sourceIndex][1]);
+                if(roomContainers[sourceIndex][1] > _.min([site.progressTotal, 500]) + 200){
+                    //console.log("build task est container stored: " + roomContainers[sourceIndex][1]);
                     newTasks.push(new Task_BuildStructure(roomContainers[sourceIndex][0], site, 3));
                     break;
+                }
+                let maxRoomContaineramm = roomContainers.reduce((a,b) => (a[1] > b[1]) ? a : b)[1];
+                if(maxRoomContaineramm > _.min([site.progressTotal, 500]) + 200){
+                    let maxRoomContainerID = roomContainers.reduce((a,b) => (a[1] > b[1]) ? a : b)[0];
+                    newTasks.push(new Task_BuildStructure(maxRoomContainerID, site, 3));
                 }
 
             }

@@ -25,9 +25,9 @@ export function manageRoomEnergy(spawn: StructureSpawn, active_tasks: Array<[Tas
 
     //assign energy need to source
     var prio = 2;
-    if (spawn.room.energyAvailable < 400){
+    if (spawn.room.energyAvailable < spawn.room.energyCapacityAvailable){
         prio = 3;
-    }else if(spawn.room.energyAvailable < 100){
+    }else if(spawn.room.energyAvailable < 200){
         prio = 4;
     }
     //console.log("Need energy: " + JSON.stringify(needEnergy));
@@ -77,10 +77,15 @@ export function manageRoomEnergy(spawn: StructureSpawn, active_tasks: Array<[Tas
 
             if (sourceDest != null){
                 let sourceIndex = roomContainers.findIndex(x => x[2].isEqualTo(sourceDest as RoomPosition));
-                if(roomContainers[sourceIndex][1] >= needed + 250){
-                    console.log("move task est container stored: " + roomContainers[sourceIndex][1]);
-                    newTasks.push(new Task_MoveItem(roomContainers[sourceIndex][0], need.id, needed, RESOURCE_ENERGY, 3));
+                if(roomContainers[sourceIndex][1] >= needed + 200){
+                    //console.log("move task est container stored: " + roomContainers[sourceIndex][1]);
+                    newTasks.push(new Task_MoveItem(roomContainers[sourceIndex][0], need.id, needed, RESOURCE_ENERGY, prio));
                     break;
+                }
+                let maxRoomContaineramm = roomContainers.reduce((a,b) => (a[1] > b[1]) ? a : b)[1];
+                if(maxRoomContaineramm > needed + 200){
+                    let maxRoomContainerID = roomContainers.reduce((a,b) => (a[1] > b[1]) ? a : b)[0];
+                    newTasks.push(new Task_MoveItem(maxRoomContainerID, need.id, needed, RESOURCE_ENERGY, prio));
                 }
 
             }

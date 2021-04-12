@@ -138,7 +138,7 @@ export function runTask_UpgradeController(taskOwner: Creep, task: Task_UpgradeCo
       if(task.hasEnergy && taskOwner.store.energy == 0){
         task.status = "COMPLETED";
         task.hasEnergy = false;
-        console.log("Upgrade controller time estimation error: " + task.estRemainingTime);
+        //console.log("Upgrade controller time estimation error: " + task.estRemainingTime);
       }
 
 

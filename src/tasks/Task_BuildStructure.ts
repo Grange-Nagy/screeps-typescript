@@ -132,7 +132,7 @@ export function runTask_BuildStructure(taskOwner: Creep, task: Task_BuildStructu
 
 
     }else{
-        console.log("Build time estimation error: " + task.estRemainingTime);
+        //console.log("Build time estimation error: " + task.estRemainingTime);
         task.status = "COMPLETED";
 
 

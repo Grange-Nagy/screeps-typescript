@@ -15,6 +15,9 @@ export function getContainerStates(active_tasks: Array<[Task, (Creep | Structure
 
   for(let can of containers){
     containerStates.push([can.id, can.store.energy, can.pos]);
+    if(can.store.energy){
+      //console.log("Can full!");
+    }
   }
 
   for(let task of active_tasks){
