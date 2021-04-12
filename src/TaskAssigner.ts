@@ -23,7 +23,7 @@ export function assignTasks(newTasks: Array<Task>, currentWorkers: Array<Creep |
               continue;
             }else{
               if (valWorker.name == workman.memory.type.name){
-                  if(workman.memory.tasks.length && workman.memory.tasks.length > 10){
+                  if(workman.memory.tasks.length && workman.memory.tasks.length > 5){
                     continue;
                   }
                 avaliableValidWorkers.push(workman);
@@ -223,10 +223,11 @@ export function assignTasks(newTasks: Array<Task>, currentWorkers: Array<Creep |
         unassignedTasks.push(task);
         if(task.priority != 0 && !isAssigned){
             for (var valType of task.validWorkers){
+              //console.log(task.name + " attempting to spin up a " + valType.name +"; room energy " + Game.rooms[task.taskLocation.roomName].energyAvailable + ", crep cost: " + valType.cost);
                 if(!(valType.categories.includes("spawner")) && Game.rooms[task.taskLocation.roomName].energyAvailable > valType.cost){
                     if(valType.name == "small_spawner") {break;}
                     //console.log("room energy " + Game.rooms[task.taskLocation.roomName].energyAvailable + ", crep cost: " + valType.cost);
-                    //console.log("attempting to spin up a " + valType.name + "because failed to find worker for:= " + JSON.stringify(task));
+                    //console.log("attempting to spin up a " + valType.name + " because failed to find worker for:= " + JSON.stringify(task));
                     newTasks.push(new Task_SpawnCreep(task.taskLocation,1,false,valType));
                     break;
                 }

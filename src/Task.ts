@@ -21,6 +21,8 @@ export interface Task{
     estRemainingTime:  number;             //estimated duration of task remaining, initalized as time from
     resourceCost:      number;              //ammount of resources used by task
 
+    isInit:                 boolean;
+
     //interrupt?(taskOwner: AnyCreep | AnyStructure):       void;               //handler to interrupt, check if exists with if(task.interrupt){task.interrupt();}else{what happens if something can't be interrupt}
     //run(taskOwner: AnyCreep | AnyStructure):   void;
 

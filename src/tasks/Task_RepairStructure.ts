@@ -15,6 +15,7 @@ export class Task_RepairStructure implements Task {
     validWorkers: Array<WorkerType>;
     estRemainingTime: number;
     resourceCost:      number;
+    isInit:                 boolean;
 
   //-------------------------------------------
 
@@ -38,7 +39,8 @@ export class Task_RepairStructure implements Task {
     this.structureID = repairSite.id;
     this.initHits = repairSite.hits;
     this.timePassed = 0;
-    this.resourceCost = (repairSite.hitsMax - repairSite.hits)/100;
+    this.resourceCost = _.min([(repairSite.hitsMax - repairSite.hits)/100,500]);
+    this.isInit = false;
   }
 
 
@@ -82,6 +84,12 @@ export function runTask_RepairStructure(taskOwner: Creep, task: Task_RepairStruc
         }else{
             let source = taskOwner.pos.findClosestByPath(taskOwner.room.find(FIND_STRUCTURES).filter(struct => <StructureConstant>struct.structureType == STRUCTURE_CONTAINER));
             if(source){
+
+                if(!task.isInit){
+                    task.estRemainingTime += (PathFinder.search(taskOwner.pos,source.pos).cost);
+                    task.isInit = true;
+                  }
+
                 if (taskOwner.pos.isNearTo(source.pos)){
                     let errCode = taskOwner.withdraw(source,RESOURCE_ENERGY);
                     if(errCode != 0 ){
@@ -96,7 +104,7 @@ export function runTask_RepairStructure(taskOwner: Creep, task: Task_RepairStruc
                     }
                 }
             }else{
-                console.log(taskOwner.name + " failed to find path to source to build " + task.structureID);
+                console.log(taskOwner.name + " failed to find path to source to repair " + task.structureID);
             }
         }
 

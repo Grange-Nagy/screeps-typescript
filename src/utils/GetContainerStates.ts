@@ -44,8 +44,8 @@ export function getContainerStates(active_tasks: Array<[Task, (Creep | Structure
       }
     }
   }
-  let task_adj_container_cap = (containerStates[0][1] + containerStates[1][1]);
-  console.log("task adjusted container capacity = " + task_adj_container_cap)
+  //let task_adj_container_cap = (containerStates[0][1] + containerStates[1][1]);
+  //console.log("task adjusted container capacity = " + task_adj_container_cap)
 
   return containerStates;
 

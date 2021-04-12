@@ -49,8 +49,6 @@ export class WorkerType{
             }
         }
 
-
-
         var partSum = bodyStrucArray.reduce(function(a,b){
             return a+b;
         }, 0);

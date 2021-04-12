@@ -7,7 +7,6 @@ import { WorkerType } from "WorkerType";
 import { manageRoomEnergy } from "./managers/ManageRoomEnergy";
 import { Traveler } from "utils/Traveler";
 import { manageRepairTasks } from "./managers/ManageRoomRepair";
-import { Task_UpgradeController } from "./tasks/Task_UpgradeController";
 import { runWorkers } from "RunWorkers";
 import { getContainerStates } from "utils/getContainerStates";
 import { manageControllerUpgrades } from "managers/ManageControllerUpgrades";
@@ -56,6 +55,8 @@ export const loop = ErrorMapper.wrapLoop(() => {
     }
   }
 
+  //establish spawner
+
   //define global memory as room 1's
   var taskManagerMemory = Game.spawns['Spawn1'].room.memory;
   taskManagerMemory.isGlobal = true;
@@ -78,13 +79,7 @@ export const loop = ErrorMapper.wrapLoop(() => {
   //TODO: MAKE WORK FOR CONTAINERS THAT ARE NOT ENERGY
   var containerStates: Array<[Id<StructureContainer>, number, RoomPosition]> = getContainerStates(active_tasks,enqueued_tasks);
 
-  let task_adj_container_cap = (containerStates[0][1] + containerStates[1][1]);
-  console.log("task adjusted container capacity = " + task_adj_container_cap)
-
-
-
-
-
+  console.log("container1 est: " + containerStates[0][1] + "\tcontainer2 est: " + containerStates[1][1]);
 
   //room manager
   for(let name in Game.spawns){
@@ -94,10 +89,20 @@ export const loop = ErrorMapper.wrapLoop(() => {
 
 
 
-    newTasks = newTasks.concat(manageBuildTasks         (spawn, active_tasks, enqueued_tasks));
+    newTasks = newTasks.concat(manageBuildTasks         (spawn, active_tasks, enqueued_tasks, containerStates));
     newTasks = newTasks.concat(manageRepairTasks        (spawn, active_tasks, enqueued_tasks));
-    newTasks = newTasks.concat(manageRoomEnergy         (spawn, active_tasks, enqueued_tasks));
+    newTasks = newTasks.concat(manageRoomEnergy         (spawn, active_tasks, enqueued_tasks, containerStates));
     newTasks = newTasks.concat(manageControllerUpgrades (spawn, containerStates));
+
+
+    //TODO: DELETE THIS NEX CODE
+    const cannon = <StructureTower>(
+      spawn.room.find(FIND_MY_STRUCTURES, { filter: struct => struct.structureType === STRUCTURE_TOWER })[0]
+    );
+    const enemies = spawn.room.find(FIND_HOSTILE_CREEPS);
+    if (cannon && enemies) {
+      cannon.attack(enemies[0]);
+    }
 
 
   }
@@ -110,5 +115,9 @@ export const loop = ErrorMapper.wrapLoop(() => {
   for(let unassignedTask of unassignedTasks){
 
   }
+
+
+
+
 
 });

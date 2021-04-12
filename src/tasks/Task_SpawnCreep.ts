@@ -13,6 +13,7 @@ export class Task_SpawnCreep implements Task {
     validWorkers: Array<WorkerType>;
     estRemainingTime: number;
     resourceCost:      number;
+    isInit:                 boolean;
 
   //-------------------------------------------
 
@@ -30,6 +31,7 @@ export class Task_SpawnCreep implements Task {
     this.estRemainingTime = 3 * creep.partSum;
     this.creep = creep;
     this.resourceCost = 0;
+    this.isInit = false;
   }
 
 

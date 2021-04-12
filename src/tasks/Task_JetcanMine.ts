@@ -15,6 +15,7 @@ export class Task_JetcanMine implements Task {
     validWorkers: Array<WorkerType>;
     estRemainingTime: number;
     resourceCost:      number;
+    isInit:                 boolean;
 
   //-------------------------------------------
 
@@ -34,6 +35,7 @@ export class Task_JetcanMine implements Task {
     this.nodeID = node.id;
     this.canID = container.id;
     this.resourceCost = 0;
+    this.isInit = false;
 
 
   }
@@ -67,7 +69,15 @@ export function runTask_JetcanMine(taskOwner: Creep, task: Task_JetcanMine) {
 
         }else{
             let err = taskOwner.travelTo(dest);
-            if(err != 0 && err != -11){
+            if(taskOwner.pos.isNearTo(dest)){
+                //check tile for creep and delete it
+                let lookAtObj = taskOwner.room.lookAt(dest);
+                lookAtObj.forEach(function(obj){
+                    obj[LOOK_CREEPS]?.suicide();
+                })
+            }
+            if(err != 0 && err != ERR_TIRED){
+
                 task.status = "HALTED";
                 console.log("jetcan miner is halted err code " + err);
             }

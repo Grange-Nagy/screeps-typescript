@@ -3,8 +3,11 @@ import { Task_MoveItem } from "tasks/Task_MoveItem";
 
 var taskManagerMemory = Game.spawns['Spawn1'].room.memory;
 
+//const structuresToFeed =
+
 export function manageRoomEnergy(spawn: StructureSpawn, active_tasks: Array<[Task, (Creep | StructureSpawn)]>,
-                                                        enqueued_tasks: Array<[Task, (Creep | StructureSpawn)]>):Array<Task>{
+                                                        enqueued_tasks: Array<[Task, (Creep | StructureSpawn)]>,
+                                                        containerStates: Array<[Id<StructureContainer>, number, RoomPosition]>):Array<Task>{
     let newTasks: Array<Task> = [];
 
 
@@ -12,33 +15,11 @@ export function manageRoomEnergy(spawn: StructureSpawn, active_tasks: Array<[Tas
     if(spawn.room.energyCapacityAvailable == spawn.room.energyAvailable){
         return [];
     }
-    let containers: Array<[StructureContainer, number, Array<AnyStoreStructure>]> = [];       //array of containers and their available energy
-    //calculate energy in each container accounting for current tasks
-    let temp = spawn.room.find(FIND_STRUCTURES).filter(struct => <StructureConstant>struct.structureType == STRUCTURE_CONTAINER) as unknown;
-    let containerList = temp as Array<StructureContainer>;
-    for(let contain of containerList){
-        if (taskManagerMemory.sourceContainerAssignments.findIndex(ele => ele[1] == contain.pos) != -1){
-            containers.push([contain, contain.store.energy, []]);
-        }
-    }
-    for (let task of active_tasks){
-        let containerIndex = containers.findIndex(ele => ele[0].pos == task[0].taskDestination);
-        if (containerIndex == -1){
-            continue;
-        }
-        if(task[0] instanceof Task_MoveItem && task[0].itemType == RESOURCE_ENERGY){
-            containers[containerIndex][1] -= task[0].ammount;
 
-        }
-
-    //needEnergy.sort((a,b) => (a as AnyStoreStructure).store.energy > (b as AnyStoreStructure).store.energy ? -1 : 1);
-
-
-
-    }
     let needEnergy: Array<AnyStoreStructure>  = (spawn.room.find(FIND_STRUCTURES).filter(
-                                                struct => (struct.structureType == STRUCTURE_EXTENSION
-                                                || struct.structureType == STRUCTURE_SPAWN))) as Array<AnyStoreStructure>;
+                                                struct => (struct.structureType == STRUCTURE_EXTENSION ||
+                                                           struct.structureType == STRUCTURE_SPAWN ||
+                                                           struct.structureType == STRUCTURE_TOWER))) as Array<AnyStoreStructure>;
 
 
 
@@ -64,17 +45,23 @@ export function manageRoomEnergy(spawn: StructureSpawn, active_tasks: Array<[Tas
         }
     }
 
+    let roomContainers = containerStates.filter(ele => ele[2].roomName == spawn.room.name);
+
     for(let need of needEnergy){
 
         if(!activeSiteIds.includes(need.id) &&
            !queuedSiteIds.includes(need.id)){
+
+
+
             //console.log("debug");
-            let container = need.pos.findClosestByPath(spawn.room.find(FIND_STRUCTURES).filter(struct => struct.structureType == STRUCTURE_CONTAINER));
             let needed = 0;
             if(need instanceof StructureSpawn){
                 needed = 300 - need.store.energy;
             }else if(need instanceof StructureExtension){
                 needed = 50 - need.store.energy;
+            }else if(need instanceof StructureTower){
+                needed = 1000 - need.store.energy;
             }else{
                 continue;
             }
@@ -85,11 +72,18 @@ export function manageRoomEnergy(spawn: StructureSpawn, active_tasks: Array<[Tas
             if(needed > 100){
                 needed = 100;
             }
-            //console.log("need: " + needed)
-            //let capacityRounded50 = Math.round((need.store.getFreeCapacity(RESOURCE_ENERGY))/50)*50;
-            if(container){
-                newTasks.push(new Task_MoveItem((<StructureContainer>container).id, need.id, needed, RESOURCE_ENERGY, prio));
+
+            let sourceDest = need.pos.findClosestByPath(roomContainers.map(x => x[2]));
+
+            if (sourceDest != null){
+                let sourceIndex = roomContainers.findIndex(x => x[2].isEqualTo(sourceDest as RoomPosition));
+                if(roomContainers[sourceIndex][1] >= needed){
+                    newTasks.push(new Task_MoveItem(roomContainers[sourceIndex][0], need.id, needed, RESOURCE_ENERGY, 3));
+                    break;
+                }
+
             }
+
 
          }
 

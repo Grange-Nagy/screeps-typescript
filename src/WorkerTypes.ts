@@ -14,11 +14,13 @@ export const WorkerTypes: Array<WorkerType> = [
     //new WorkerType("large_hauler", ["hauler"], [0,3,3,0,0,0,0,0]),
 
     //builder
+    //new WorkerType("tiny_builder", ["builder"], [1,2,1,0,0,0,0,0]),
     new WorkerType("small_builder", ["builder"], [2,4,2,0,0,0,0,0]),
     new WorkerType("large_builder", ["builder"], [3,6,3,0,0,0,0,0]),
     //new WorkerType("mondo_builder", ["builder"],  [4,8,4,0,0,0,0,0]),
 
     //miner
+    new WorkerType("tiny_jetcan_miner", ["miner"], [2,1,1,0,0,0,0,0]),
     new WorkerType("small_jetcan_miner", ["miner"], [3,1,1,0,0,0,0,0]),
     new WorkerType("large_miner", ["miner"], [5,1,1,0,0,0,0,0]),
     new WorkerType("mondo_miner", ["miner"], [7,1,1,0,0,0,0,0])

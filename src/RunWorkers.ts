@@ -1,11 +1,13 @@
 import { runTask } from "RunTask";
 import { Task } from "Task";
+import { WorkerTypes } from "WorkerTypes";
 
 
 
 export function runWorkers(currentWorkers: Array<Creep | StructureSpawn>, active_tasks: Array<[Task, (Creep | StructureSpawn)]>, enqueued_tasks: Array<[Task, (Creep | StructureSpawn)]>){
     for(let name in Game.spawns){
       let spawn = Game.spawns[name];
+      spawn.memory.type = WorkerTypes[0];
       currentWorkers.push(spawn);
       if(spawn.memory.tasks?.length > 0){
 

@@ -4,7 +4,8 @@ import { Task_BuildStructure } from "tasks/Task_BuildStructure";
 
 export function manageBuildTasks(spawn: StructureSpawn,
                                 active_tasks: Array<[Task, (Creep | StructureSpawn)]>,
-                                enqueued_tasks: Array<[Task, (Creep | StructureSpawn)]>): Array<Task>{
+                                enqueued_tasks: Array<[Task, (Creep | StructureSpawn)]>,
+                                containerStates: Array<[Id<StructureContainer>, number, RoomPosition]>): Array<Task>{
 
     let newTasks: Array<Task> = [];
     let constructionSites = spawn.room.find(FIND_CONSTRUCTION_SITES);
@@ -23,14 +24,24 @@ export function manageBuildTasks(spawn: StructureSpawn,
         }
     }
 
-
+    let roomContainers = containerStates.filter(ele => ele[2].roomName == spawn.room.name);
 
     for( let site of constructionSites){
         if(!activeSiteIds.includes(site.id) &&
            !queuedSiteIds.includes(site.id)){
+            let sourceDest = site.pos.findClosestByPath(roomContainers.map(x => x[2]));
+
+            if (sourceDest != null){
+                let sourceIndex = roomContainers.findIndex(x => x[2].isEqualTo(sourceDest as RoomPosition));
+                if(roomContainers[sourceIndex][1] > _.min([site.progressTotal, 500]) + 500){
+                    newTasks.push(new Task_BuildStructure(roomContainers[sourceIndex][0], site, 3));
+                    break;
+                }
+
+            }
 
 
-            newTasks.push(new Task_BuildStructure(site, 2));
+
          }
     }
 

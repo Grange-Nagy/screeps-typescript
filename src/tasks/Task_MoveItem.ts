@@ -15,6 +15,7 @@ export class Task_MoveItem implements Task {
     validWorkers: Array<WorkerType>;
     estRemainingTime: number;
     resourceCost:      number;
+    isInit:                 boolean;
 
   //-------------------------------------------
 
@@ -44,6 +45,7 @@ export class Task_MoveItem implements Task {
     this.itemType = itemType;
     this.hasItems = false;
     this.resourceCost = ammount;
+    this.isInit = false;
     //this.beenToSource = false;
   }
 
@@ -57,6 +59,11 @@ export function runTask_MoveItem(taskOwner: Creep, task: Task_MoveItem) {
     let source = Game.getObjectById(task.sourceID);
     let dest = Game.getObjectById(task.destinationID);
     if(source && dest){
+
+      if(!task.isInit){
+        task.estRemainingTime += (PathFinder.search(taskOwner.pos,source.pos).cost);
+        task.isInit = true;
+      }
 
 
       //console.log("movecreep stored" + taskOwner.store[task.itemType] + ", requested: " + task.ammount);

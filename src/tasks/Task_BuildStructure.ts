@@ -15,16 +15,18 @@ export class Task_BuildStructure implements Task {
     validWorkers: Array<WorkerType>;
     estRemainingTime: number;
     resourceCost:      number;
+    isInit:                 boolean;
 
 
   //-------------------------------------------
 
     building:                   boolean;
+    sourceID:                   Id<AnyStoreStructure>;
     constructionSiteID:         Id<ConstructionSite>;
     timePassed:                 number;
     bootstrap: boolean;
 
-  constructor(constructionSite: ConstructionSite, priority: number) {
+  constructor(sourceID: Id<AnyStoreStructure>, constructionSite: ConstructionSite, priority: number) {
     this.name = "build_structure";
     this.status = "HALTED";
     this.taskLocation = constructionSite.pos;
@@ -36,10 +38,12 @@ export class Task_BuildStructure implements Task {
     this.estRemainingTime = (constructionSite.progressTotal/5);                   //really rough estimation
 
     this.building = false;
+    this.sourceID = sourceID;
     this.constructionSiteID = constructionSite.id;
     this.timePassed = 0;
     this.bootstrap = false;
-    this.resourceCost = constructionSite.progressTotal;
+    this.resourceCost = _.min([constructionSite.progressTotal, 500]);
+    this.isInit = false;
   }
 
 
@@ -47,6 +51,8 @@ export class Task_BuildStructure implements Task {
 }
 
 export function runTask_BuildStructure(taskOwner: Creep, task: Task_BuildStructure) {
+
+
 
 
     //this is utterly fucking retarded
@@ -78,10 +84,19 @@ export function runTask_BuildStructure(taskOwner: Creep, task: Task_BuildStructu
                 }
             }
         }else{
-            let source = taskOwner.pos.findClosestByPath(taskOwner.room.find(FIND_STRUCTURES).filter(struct => <StructureConstant>struct.structureType == STRUCTURE_CONTAINER));
+
+
+
+            let source = Game.getObjectById(task.sourceID);
             if(source){
-                if (taskOwner.pos.isNearTo(source.pos)){
-                    let errCode = taskOwner.withdraw(source,RESOURCE_ENERGY);
+
+                if(!task.isInit){
+                    task.estRemainingTime += (PathFinder.search(taskOwner.pos,source.pos).cost);
+                    task.isInit = true;
+                  }
+
+                let errCode = taskOwner.withdraw(source,RESOURCE_ENERGY);
+                if (errCode != ERR_NOT_IN_RANGE){
                     if(errCode != 0 ){
                         if(errCode == -6){
                             //low on energy
