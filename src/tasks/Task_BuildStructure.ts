@@ -1,6 +1,7 @@
 import { WorkerType } from "WorkerType";
 import { WorkerTypes } from "WorkerTypes";
 import { Task } from "Task";
+import { ESTALE } from "constants";
 
 
 
@@ -25,6 +26,7 @@ export class Task_BuildStructure implements Task {
     constructionSiteID:         Id<ConstructionSite>;
     timePassed:                 number;
     bootstrap: boolean;
+    baselineProgress:           number;
 
   constructor(sourceID: Id<AnyStoreStructure>, constructionSite: ConstructionSite, priority: number) {
     this.name = "build_structure";
@@ -34,8 +36,8 @@ export class Task_BuildStructure implements Task {
     this.priority = priority;
     this.isRepeatable = true;
     this.requireResource = false;
-    this.validWorkers = WorkerTypes.filter(w => w.categories.includes("builder"));
-    this.estRemainingTime = (constructionSite.progressTotal/5);                   //really rough estimation
+    this.validWorkers = WorkerTypes.filter(w => w.categories.includes("builder")).sort(((a, b) => a.partSum > b.partSum ? -1 : 1)); //sort decending
+    this.estRemainingTime = _.min([constructionSite.progressTotal, 2000])/5;;                   //really rough estimation
 
     this.building = false;
     this.sourceID = sourceID;
@@ -44,6 +46,7 @@ export class Task_BuildStructure implements Task {
     this.bootstrap = false;
     this.resourceCost = _.min([constructionSite.progressTotal, 500]);
     this.isInit = false;
+    this.baselineProgress = 0;
   }
 
 
@@ -58,6 +61,13 @@ export function runTask_BuildStructure(taskOwner: Creep, task: Task_BuildStructu
     //this is utterly fucking retarded
     let maybeSite = Game.getObjectById(task.constructionSiteID);
     if(maybeSite){
+
+        if(!task.isInit){
+            task.baselineProgress = maybeSite.progress;
+            task.isInit = true;
+        }
+
+
         task.resourceCost = maybeSite.progressTotal - maybeSite.progress;
         let dest = new RoomPosition(task.taskLocation.x, task.taskLocation.y, task.taskLocation.roomName);
 
@@ -124,9 +134,12 @@ export function runTask_BuildStructure(taskOwner: Creep, task: Task_BuildStructu
 
 
         task.timePassed++;
-        let progressPercent = maybeSite.progress/maybeSite.progressTotal
+        let progressPercent = (maybeSite.progress - task.baselineProgress)/(maybeSite.progressTotal - task.baselineProgress);
+        //console.log("remaining percent: " + (1 - progressPercent));
         if (progressPercent > 0.15){
+
             task.estRemainingTime = (1 - progressPercent) / (progressPercent / task.timePassed);
+            //console.log("remaining time: " + task.estRemainingTime);
         }
 
 

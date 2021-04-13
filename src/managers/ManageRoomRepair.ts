@@ -24,6 +24,7 @@ export function manageRepairTasks(spawn: StructureSpawn,
     let structures = spawn.room.find(FIND_STRUCTURES).filter(struct => (struct.hitsMax - struct.hits) > 500 && struct.structureType != STRUCTURE_CONTAINER);
 
 
+
     for( let site of structures){
         if(!activeSiteIds.includes(site.id) &&
            !queuedSiteIds.includes(site.id)){

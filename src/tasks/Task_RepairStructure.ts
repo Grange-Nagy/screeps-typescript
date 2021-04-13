@@ -33,7 +33,7 @@ export class Task_RepairStructure implements Task {
     this.isRepeatable = true;
     this.requireResource = false;
     this.validWorkers = WorkerTypes.filter(w => w.categories.includes("builder"));
-    this.estRemainingTime = (repairSite.hitsMax - repairSite.hits);                   //really rough estimation
+    this.estRemainingTime = _.min([(repairSite.hitsMax - repairSite.hits)/100,500]);;                   //really rough estimation
 
     this.repairing = false;
     this.structureID = repairSite.id;
@@ -93,7 +93,13 @@ export function runTask_RepairStructure(taskOwner: Creep, task: Task_RepairStruc
                 if (taskOwner.pos.isNearTo(source.pos)){
                     let errCode = taskOwner.withdraw(source,RESOURCE_ENERGY);
                     if(errCode != 0 ){
-                        console.log("err witdrawl reapair" + errCode);
+                        if(errCode == ERR_NOT_ENOUGH_RESOURCES){
+                            task.status = "COMPLETED";
+                        }else{
+                            console.log("err witdrawl reapair" + errCode);
+                            task.status = "HALTED";
+                        }
+
                     }
                 }else{
                     if(taskOwner.travelTo(source.pos) != 0){

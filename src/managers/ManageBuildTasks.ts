@@ -8,7 +8,13 @@ export function manageBuildTasks(spawn: StructureSpawn,
                                 containerStates: Array<[Id<StructureContainer>, number, RoomPosition]>): Array<Task>{
 
     let newTasks: Array<Task> = [];
+
+
+
     let constructionSites = spawn.room.find(FIND_CONSTRUCTION_SITES);
+
+    //FOR EXPANSIONS
+    //constructionSites.push(Game.constructionSites['8e577f9089a5ccf']);
 
     let activeSiteIds: Array<Id<ConstructionSite>> = [];
     for(let task of active_tasks){
@@ -24,24 +30,35 @@ export function manageBuildTasks(spawn: StructureSpawn,
         }
     }
 
-    let roomContainers = containerStates.filter(ele => ele[2].roomName == spawn.room.name);
+
+    let roomContainers = [];
+    roomContainers = containerStates.filter(ele => ele[2].roomName == spawn.room.name);
+
+    let rc = spawn.room.controller;
+    if((roomContainers == [] || roomContainers == undefined || roomContainers.length == 0) && rc != undefined){
+        //console.log("%%%%%%%%%");
+        roomContainers = containerStates.filter(ele => ele[2].inRangeTo((rc as StructureController).pos.x,(rc as StructureController).pos.y,100) );
+    }
 
     for( let site of constructionSites){
         if(!activeSiteIds.includes(site.id) &&
            !queuedSiteIds.includes(site.id)){
-            let sourceDest = site.pos.findClosestByPath(roomContainers.map(x => x[2]));
-
+            //console.log("%%%%%%%%% " + roomContainers.length);
+            let sourceDest = PathFinder.search(site.pos,roomContainers.map(x => x[2])).path.pop();
             if (sourceDest != null){
                 let sourceIndex = roomContainers.findIndex(x => x[2].isEqualTo(sourceDest as RoomPosition));
-                if(roomContainers[sourceIndex][1] > _.min([site.progressTotal, 500]) + 200){
-                    //console.log("build task est container stored: " + roomContainers[sourceIndex][1]);
-                    newTasks.push(new Task_BuildStructure(roomContainers[sourceIndex][0], site, 3));
+                //console.log("sourceIndex: " + sourceIndex);
+                if(roomContainers[sourceIndex][1] > _.min([site.progressTotal - site.progress, 500])){
+                    //console.log("build task est container stored closest: " + roomContainers[sourceIndex][1]);
+                    newTasks.push(new Task_BuildStructure(roomContainers[sourceIndex][0], site, 2));
                     break;
                 }
                 let maxRoomContaineramm = roomContainers.reduce((a,b) => (a[1] > b[1]) ? a : b)[1];
-                if(maxRoomContaineramm > _.min([site.progressTotal, 500]) + 200){
+                if(maxRoomContaineramm > _.min([site.progressTotal - site.progress, 500])){
+                    //console.log("build task est container stored max: " + maxRoomContaineramm);
                     let maxRoomContainerID = roomContainers.reduce((a,b) => (a[1] > b[1]) ? a : b)[0];
-                    newTasks.push(new Task_BuildStructure(maxRoomContainerID, site, 3));
+                    newTasks.push(new Task_BuildStructure(maxRoomContainerID, site, 2));
+                    break;
                 }
 
             }

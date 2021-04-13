@@ -23,7 +23,7 @@ export function manageRoomNodes(spawn: StructureSpawn, nodes: Array<Source>, act
             if (task[0] == undefined){continue;}
             if(task[0].name == "jetcan_mine" && (task[0] as Task_JetcanMine).taskLocation.x == containerEntry[1].x && (task[0] as Task_JetcanMine).taskLocation.y == containerEntry[1].y){
               isAssigned = true;
-              //console.log("debug");
+              //console.log("debug: " + spawn.name);
               break;
 
             }
@@ -57,7 +57,7 @@ export function manageRoomNodes(spawn: StructureSpawn, nodes: Array<Source>, act
             for(let can of containersInRoom){
               //console.log(can.pos.x + ", " + can.pos.y + " vs " +  + ", " + containerEntry[1].y);
               if(can.pos.x == containerEntry[1].x && can.pos.y == containerEntry[1].y){
-                //console.log("creating jectcan task");
+                console.log("creating jectcan task");
                 newTasks.push(new Task_JetcanMine(nodes[i],containerEntry[1], can));
               }
             }

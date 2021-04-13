@@ -10,6 +10,7 @@ import { manageRepairTasks } from "./managers/ManageRoomRepair";
 import { runWorkers } from "RunWorkers";
 import { getContainerStates } from "utils/getContainerStates";
 import { manageControllerUpgrades } from "managers/ManageControllerUpgrades";
+import { Task_BuildStructure } from "tasks/Task_BuildStructure";
 
 Traveler.init();
 
@@ -54,8 +55,12 @@ export const loop = ErrorMapper.wrapLoop(() => {
       delete Memory.creeps[name];
     }
   }
-
   //establish spawner
+  let x = Game.rooms['W1N2'].controller;
+  if(x){
+    //Game.creeps['con'].claimController(x);
+  }
+
 
   //define global memory as room 1's
   var taskManagerMemory = Game.spawns['Spawn1'].room.memory;
@@ -69,6 +74,11 @@ export const loop = ErrorMapper.wrapLoop(() => {
   var currentWorkers: Array<Creep | StructureSpawn> = [];
   var active_tasks: Array<[Task, (Creep | StructureSpawn)]> = [];
   var enqueued_tasks: Array<[Task, (Creep | StructureSpawn)]> = [];
+
+  var temp = Game.getObjectById('8e577f9089a5ccf' as Id<ConstructionSite>);
+  if(temp &&Game.time % 10 == 0){
+    //newTasks.push(new Task_BuildStructure(('c3ce57b592d7b10' as Id<StructureContainer>),temp,3));
+  }
 
 
 

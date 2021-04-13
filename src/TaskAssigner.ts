@@ -23,10 +23,17 @@ export function assignTasks(newTasks: Array<Task>, currentWorkers: Array<Creep |
               continue;
             }else{
               if (valWorker.name == workman.memory.type.name){
-                  if(workman.memory.tasks.length && workman.memory.tasks.length > 4 &&
+                  if(workman.memory.tasks.length && workman.memory.tasks.length >= 4 &&
                    !(workman.memory.tasks[0].priority < task.priority)){
                     continue;
                   }
+                  //console.log("Task: " + task.name + ", valid worker: " + workman.memory.type.name);
+
+
+                if(workman.memory.type.name == "small_spawner" && workman.room.energyAvailable < task.resourceCost){
+                  continue;
+                }
+
                 avaliableValidWorkers.push(workman);
               }
             }
@@ -48,7 +55,7 @@ export function assignTasks(newTasks: Array<Task>, currentWorkers: Array<Creep |
           switch(prio){
             //at 4, find nearest worker and prepend to all current tasks (also needs to drop items maybe)
             case(4):{
-              console.log("???");
+              //console.log("???");
               let winner: [(Creep | StructureSpawn), number] = findNearestInTime(task.taskLocation, avaliableValidWorkers);
 
               //TODO call interupt function on active task here
@@ -61,7 +68,7 @@ export function assignTasks(newTasks: Array<Task>, currentWorkers: Array<Creep |
             case(3):{
 
               let winner: [(Creep | StructureSpawn), number] = [avaliableValidWorkers[0], 99999999999];
-              //console.log("switch 2");
+              //console.log("Task: " + task.name + ", target room: " + task.taskDestination.roomName + ", task est:" + task.estRemainingTime);
 
               for(let potentialWorker of avaliableValidWorkers){
                 let path = PathFinder.search(potentialWorker.pos, task.taskLocation);
@@ -118,6 +125,7 @@ export function assignTasks(newTasks: Array<Task>, currentWorkers: Array<Creep |
             }
             //at 2, find nearest worker (in time) appending to takslist if not idle
             case(2):{
+              //console.log("Task: " + task.name + ", target room: " + task.taskDestination.roomName + ", task est:" + task.estRemainingTime);
               //console.log("???");
               //console.log(JSON.stringify(task));
               //console.log("debug " + task.taskDestination.x);
@@ -226,7 +234,7 @@ export function assignTasks(newTasks: Array<Task>, currentWorkers: Array<Creep |
         if(task.priority != 0 && !isAssigned){
             for (var valType of task.validWorkers){
               //console.log(task.name + " attempting to spin up a " + valType.name +"; room energy " + Game.rooms[task.taskLocation.roomName].energyAvailable + ", crep cost: " + valType.cost);
-                if(!(valType.categories.includes("spawner")) && Game.rooms[task.taskLocation.roomName].energyAvailable >= valType.cost){
+                if(!(valType.categories.includes("spawner"))){
                     if(valType.name == "small_spawner" || valType.name == "depreciated") {break;}
                     //console.log("room energy " + Game.rooms[task.taskLocation.roomName].energyAvailable + ", crep cost: " + valType.cost);
                     //console.log("attempting to spin up a " + valType.name + " because failed to find worker for:= " + JSON.stringify(task));

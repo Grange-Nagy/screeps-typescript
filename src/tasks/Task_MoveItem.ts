@@ -1,6 +1,7 @@
 import { WorkerType } from "WorkerType";
 import { WorkerTypes } from "WorkerTypes";
 import { Task } from "Task";
+import { ALL } from "dns";
 
 
 
@@ -55,12 +56,21 @@ export class Task_MoveItem implements Task {
 
 export function runTask_MoveItem(taskOwner: Creep, task: Task_MoveItem) {
 
+
+
+
     //this is utterly fucking retarded
     let source = Game.getObjectById(task.sourceID);
     let dest = Game.getObjectById(task.destinationID);
     if(source && dest){
 
       if(!task.isInit){
+        //if creep is holding something other than intended exceding intended delivery ammount
+        if (taskOwner.store.getCapacity() - (taskOwner.store.getUsedCapacity() - taskOwner.store.getUsedCapacity(task.itemType)) > task.ammount){
+          //find what it's holding
+          let heldUnwanted = RESOURCES_ALL.filter(x => taskOwner.store.getUsedCapacity(x) > 0 && x != task.itemType);
+          heldUnwanted.forEach(x => taskOwner.drop(x));
+        }
         task.estRemainingTime += (PathFinder.search(taskOwner.pos,source.pos).cost);
         task.isInit = true;
       }

@@ -47,7 +47,14 @@ export function manageRoomEnergy(spawn: StructureSpawn, active_tasks: Array<[Tas
 
     let roomContainers = containerStates.filter(ele => ele[2].roomName == spawn.room.name);
 
+    let rc = spawn.room.controller;
+    if((roomContainers == [] || roomContainers == undefined || roomContainers.length == 0) && rc != undefined){
+        //console.log("%%%%%%%%%");
+        roomContainers = containerStates.filter(ele => ele[2].inRangeTo((rc as StructureController).pos.x,(rc as StructureController).pos.y,100) );
+    }
+
     for(let need of needEnergy){
+
 
         if(!activeSiteIds.includes(need.id) &&
            !queuedSiteIds.includes(need.id)){
@@ -73,7 +80,7 @@ export function manageRoomEnergy(spawn: StructureSpawn, active_tasks: Array<[Tas
                 needed = 100;
             }
 
-            let sourceDest = need.pos.findClosestByPath(roomContainers.map(x => x[2]));
+            let sourceDest = PathFinder.search(need.pos,roomContainers.map(x => x[2])).path.pop();
 
             if (sourceDest != null){
                 let sourceIndex = roomContainers.findIndex(x => x[2].isEqualTo(sourceDest as RoomPosition));
@@ -86,6 +93,7 @@ export function manageRoomEnergy(spawn: StructureSpawn, active_tasks: Array<[Tas
                 if(maxRoomContaineramm > needed + 200){
                     let maxRoomContainerID = roomContainers.reduce((a,b) => (a[1] > b[1]) ? a : b)[0];
                     newTasks.push(new Task_MoveItem(maxRoomContainerID, need.id, needed, RESOURCE_ENERGY, prio));
+                    break;
                 }
 
             }

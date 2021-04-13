@@ -9,8 +9,20 @@ export function runWorkers(currentWorkers: Array<Creep | StructureSpawn>, active
     for(let name in Game.spawns){
       let spawn = Game.spawns[name];
       spawn.memory.type = WorkerTypes[0];
+
+       //TODO remove
+       if (!spawn.memory.tasks || !spawn.memory.type){
+        //spawn.memory.type = WorkerTypes[1];
+        spawn.memory.tasks = [];
+        //spawn.memory.role = null;
+      }
+
       currentWorkers.push(spawn);
       if(spawn.memory.tasks?.length > 0){
+
+        if(spawn.memory.tasks.length > 4){
+          spawn.memory.tasks.length = 4;
+        }
 
         if (spawn.memory.tasks[0].status == "COMPLETED"){
           spawn.memory.tasks.shift();
@@ -26,14 +38,19 @@ export function runWorkers(currentWorkers: Array<Creep | StructureSpawn>, active
       let creep = Game.creeps[name];
 
       //TODO remove
-      if (creep.memory.role){
-        creep.memory.type = WorkerTypes[1];
+      if (creep.memory.role || !creep.memory.tasks){
+        //creep.memory.type = WorkerTypes[1];
         creep.memory.tasks = [];
         creep.memory.role = null;
       }
 
+
       currentWorkers.push(creep);
       if(creep.memory.tasks?.length > 0){
+
+        if(creep.memory.tasks.length > 4){
+          creep.memory.tasks.length = 4;
+        }
 
         if (creep.memory.tasks[0].status == "COMPLETED"){
           creep.memory.tasks.shift();

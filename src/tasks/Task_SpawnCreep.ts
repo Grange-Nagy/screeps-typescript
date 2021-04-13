@@ -30,7 +30,7 @@ export class Task_SpawnCreep implements Task {
     this.validWorkers = WorkerTypes.filter(w => w.categories.includes("spawner"));
     this.estRemainingTime = 3 * creep.partSum;
     this.creep = creep;
-    this.resourceCost = 0;
+    this.resourceCost = creep.cost;
     this.isInit = false;
   }
 

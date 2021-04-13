@@ -6,6 +6,8 @@ import { runTask_RepairStructure, Task_RepairStructure } from "tasks/Task_Repair
 import { runTask_SpawnCreep, Task_SpawnCreep } from "tasks/Task_SpawnCreep";
 import { runTask_UpgradeController, Task_UpgradeController } from "tasks/Task_UpgradeController";
 
+
+//TODO: make this but for task initalization
 export function runTask(undefTaskOwner: AnyCreep | AnyStructure, undefTask: Task){
 
     if(undefTask == undefined){
