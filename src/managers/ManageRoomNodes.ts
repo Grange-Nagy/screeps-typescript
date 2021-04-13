@@ -57,7 +57,7 @@ export function manageRoomNodes(spawn: StructureSpawn, nodes: Array<Source>, act
             for(let can of containersInRoom){
               //console.log(can.pos.x + ", " + can.pos.y + " vs " +  + ", " + containerEntry[1].y);
               if(can.pos.x == containerEntry[1].x && can.pos.y == containerEntry[1].y){
-                console.log("creating jectcan task");
+                //console.log("creating jectcan task");
                 newTasks.push(new Task_JetcanMine(nodes[i],containerEntry[1], can));
               }
             }

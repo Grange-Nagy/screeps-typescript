@@ -117,7 +117,7 @@ export function runTask_BuildStructure(taskOwner: Creep, task: Task_BuildStructu
                     }
                 }else{
                     let errCode = taskOwner.travelTo(source.pos);
-                    if( errCode != 0){
+                    if( errCode != 0 && errCode != -11){
                         console.log("build travelTo err " + errCode);
                         task.status = "HALTED";
                     }else{

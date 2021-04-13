@@ -74,7 +74,7 @@ export function runTask_RepairStructure(taskOwner: Creep, task: Task_RepairStruc
 
             }else{
                 let err = taskOwner.travelTo(dest);
-                if(err != 0){
+                if(err != 0 && err != -11){
                     console.log("err travel repair: " + err);
                     task.status = "HALTED";
                 }else{

@@ -21,13 +21,15 @@ export function getContainerStates(active_tasks: Array<[Task, (Creep | Structure
   }
 
   for(let task of active_tasks){
-    if(task[0].resourceCost > 0){
+    if(task[0].resourceCost > 0 && task[0].name != "small_spawner"){
       //find source
       //console.log("debug");
-      let stateIndex = containerStates.findIndex(x => x[2].x == task[0].taskLocation.x && x[2].y == task[0].taskLocation.y);
+      let stateIndex = containerStates.findIndex(x => x[2].x == task[0].taskLocation.x &&
+                                                      x[2].y == task[0].taskLocation.y &&
+                                                      x[2].roomName == task[0].taskLocation.roomName);
       if(stateIndex != -1){
         containerStates[stateIndex][1] -= task[0].resourceCost;
-        //console.log("task[0].resourceCost " + task[0].resourceCost);
+        //console.log("active-- " + task[0].resourceCost +"\tin: " + containerStates[stateIndex][2].roomName + "\ttaskname: " + task[0].name);
       }else{
         //console.log("Container find by index returned " + stateIndex);
       }
@@ -36,12 +38,14 @@ export function getContainerStates(active_tasks: Array<[Task, (Creep | Structure
   }
 
   for(let task of enqueued_tasks){
-    if(task[0].resourceCost > 0){
+    if(task[0].resourceCost > 0 && task[0].name != "small_spawner"){
       //find source
       let stateIndex = containerStates.findIndex(x => x[2].x == task[0].taskLocation.x && x[2].y == task[0].taskLocation.y);
       if(stateIndex != -1){
+        //console.log("big1: " + containerStates[stateIndex][1]);
         containerStates[stateIndex][1] -= task[0].resourceCost;
-        //console.log("Container find by index returned good " + stateIndex);
+        //console.log("big2: " + containerStates[stateIndex][1]);
+        //console.log("que-- " + task[0].resourceCost +"\tin: " + containerStates[stateIndex][2].roomName + "\ttaskname: " + task[0].name);
       }else{
         //console.log("Container find by index returned " + stateIndex);
       }

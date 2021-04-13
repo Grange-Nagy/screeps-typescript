@@ -89,6 +89,11 @@ export const loop = ErrorMapper.wrapLoop(() => {
   //TODO: MAKE WORK FOR CONTAINERS THAT ARE NOT ENERGY
   var containerStates: Array<[Id<StructureContainer>, number, RoomPosition]> = getContainerStates(active_tasks,enqueued_tasks);
 
+  for(let can of containerStates){
+    console.log("container: " + can[0] + "\test: " + can[1] + "\troom: " + can[2].roomName);
+  }
+
+
   //console.log("container1 est: " + containerStates[0][1] + "\tcontainer2 est: " + containerStates[1][1]);
 
   //room manager
