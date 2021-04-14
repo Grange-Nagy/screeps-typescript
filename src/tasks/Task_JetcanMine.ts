@@ -77,6 +77,14 @@ export function runTask_JetcanMine(taskOwner: Creep, task: Task_JetcanMine) {
                 })
             }
             if(err != 0 && err != ERR_TIRED){
+                //nuclear option for CREPP STUCK
+                if(err == -10){
+                    let lookAtObj = taskOwner.room.lookAtArea(dest.y - 1,dest.x -1,dest.y+1,dest.x + 1,true);
+                    lookAtObj.forEach(function(obj){
+                    obj[LOOK_CREEPS]?.suicide();
+                    })
+                }
+
 
                 task.status = "HALTED";
                 console.log("jetcan miner is halted err code " + err);

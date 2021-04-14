@@ -84,7 +84,7 @@ export function runTask_UpgradeController(taskOwner: Creep, task: Task_UpgradeCo
         let err = taskOwner.upgradeController(dest);
           if (err != ERR_NOT_IN_RANGE){
 
-              taskOwner.travelTo(dest);
+              //taskOwner.travelTo(dest);
               task.status = "RUNNING";
               if(err != 0){
                 if(err == -6){

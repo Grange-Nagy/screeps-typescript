@@ -90,7 +90,7 @@ export const loop = ErrorMapper.wrapLoop(() => {
   var containerStates: Array<[Id<StructureContainer>, number, RoomPosition]> = getContainerStates(active_tasks,enqueued_tasks);
 
   for(let can of containerStates){
-    console.log("container: " + can[0] + "\test: " + can[1] + "\troom: " + can[2].roomName);
+    //console.log("container: " + can[0] + "\test: " + can[1] + "\troom: " + can[2].roomName);
   }
 
 

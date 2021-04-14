@@ -32,7 +32,7 @@ export class Task_RepairStructure implements Task {
     this.priority = priority;
     this.isRepeatable = true;
     this.requireResource = false;
-    this.validWorkers = WorkerTypes.filter(w => w.categories.includes("builder"));
+    this.validWorkers = WorkerTypes.filter(w => w.categories.includes("builder")).sort(((a, b) => a.partSum > b.partSum ? -1 : 1));
     this.estRemainingTime = _.min([(repairSite.hitsMax - repairSite.hits)/100,500]);;                   //really rough estimation
 
     this.repairing = false;

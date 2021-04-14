@@ -2,6 +2,7 @@ import { Task } from "Task";
 import { Task_SpawnCreep } from "tasks/Task_SpawnCreep";
 import { findNearestInTime } from "utils/Utilities";
 
+const PATH_COST_FACTOR = 2;
 
 export function assignTasks(newTasks: Array<Task>, currentWorkers: Array<Creep | StructureSpawn>,
                             active_tasks: Array<[Task, (Creep | StructureSpawn)]>,
@@ -81,7 +82,7 @@ export function assignTasks(newTasks: Array<Task>, currentWorkers: Array<Creep |
                     }
                   }
                 }
-                let totalCost = (path.cost * potentialWorker.memory.type.unburdened_speed) + estTimeUntilFree;
+                let totalCost = (path.cost * potentialWorker.memory.type.unburdened_speed * PATH_COST_FACTOR) + estTimeUntilFree;
                 let time_to_live = 0;
                 if(potentialWorker instanceof Creep && task.estRemainingTime < 99999){
                   if(potentialWorker.ticksToLive){
@@ -98,7 +99,7 @@ export function assignTasks(newTasks: Array<Task>, currentWorkers: Array<Creep |
 
               //if worker not free
 
-              if(winner[1] > 99999){
+              if(winner[1] > 1000){
                 continue;
               }
               //console.log("WINNER cost: " + winner[1]);
@@ -162,7 +163,7 @@ export function assignTasks(newTasks: Array<Task>, currentWorkers: Array<Creep |
                   }else{time_to_live = 0;}
                 }else{time_to_live = 9999999999;}
 
-                let totalCost = (path.cost * potentialWorker.memory.type.unburdened_speed) + estTimeUntilFree;
+                let totalCost = (path.cost * potentialWorker.memory.type.unburdened_speed * PATH_COST_FACTOR) + estTimeUntilFree;
                 //console.log("total cost: " + totalCost + ", winner[1]: " + winner[1] + ", totalCost + task.estRemainingTime: " + (totalCost + task.estRemainingTime) + ", time to live: " + time_to_live);
                 if(totalCost <= winner[1] && totalCost + task.estRemainingTime < time_to_live){
                   winner[0] = potentialWorker;
@@ -174,7 +175,7 @@ export function assignTasks(newTasks: Array<Task>, currentWorkers: Array<Creep |
               }
               //////////////////////////////////////////
 
-              if(winner[1] > 99999){
+              if(1000 < winner[1] && winner[1] < 9999){
                 continue;
               }
               //console.log("WINNER cost: " + winner[1]);
