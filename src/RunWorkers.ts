@@ -20,8 +20,12 @@ export function runWorkers(currentWorkers: Array<Creep | StructureSpawn>, active
       currentWorkers.push(spawn);
       if(spawn.memory.tasks?.length > 0){
 
-        if(spawn.memory.tasks.length > 4){
-          spawn.memory.tasks.length = 4;
+        for(let i = 1; i < spawn.memory.tasks.length; i++){
+
+          if(spawn.memory.tasks[i].maxQueueableDepth < i){
+            spawn.memory.tasks.splice(i,1);
+          }
+
         }
 
         if (spawn.memory.tasks[0].status == "COMPLETED"){
@@ -48,9 +52,14 @@ export function runWorkers(currentWorkers: Array<Creep | StructureSpawn>, active
       currentWorkers.push(creep);
       if(creep.memory.tasks?.length > 0){
 
-        if(creep.memory.tasks.length > 4){
-          creep.memory.tasks.length = 4;
+        for(let i = 1; i < creep.memory.tasks.length; i++){
+
+          if(creep.memory.tasks[i].maxQueueableDepth < i){
+            creep.memory.tasks.splice(i,1);
+          }
+
         }
+
 
         if (creep.memory.tasks[0].status == "COMPLETED"){
           creep.memory.tasks.shift();

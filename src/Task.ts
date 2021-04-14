@@ -20,6 +20,7 @@ export interface Task{
     subtasks?:          Array<Task>;        //list of tasks (maybe think about preventing recursion here by making sure isTaskComposition is false for all subtasks), priority should be the same for all subtasks
     estRemainingTime:  number;             //estimated duration of task remaining, initalized as time from
     resourceCost:      number;              //ammount of resources used by task
+    maxQueueableDepth: number;
 
     isInit:                 boolean;
 

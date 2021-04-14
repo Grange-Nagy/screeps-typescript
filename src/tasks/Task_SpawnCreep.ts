@@ -14,6 +14,7 @@ export class Task_SpawnCreep implements Task {
     estRemainingTime: number;
     resourceCost:      number;
     isInit:                 boolean;
+    maxQueueableDepth: number;
 
   //-------------------------------------------
 
@@ -32,6 +33,7 @@ export class Task_SpawnCreep implements Task {
     this.creep = creep;
     this.resourceCost = creep.cost;
     this.isInit = false;
+    this.maxQueueableDepth = 0;
   }
 
 

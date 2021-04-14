@@ -17,6 +17,7 @@ export class Task_BuildStructure implements Task {
     estRemainingTime: number;
     resourceCost:      number;
     isInit:                 boolean;
+    maxQueueableDepth: number;
 
 
   //-------------------------------------------
@@ -38,6 +39,7 @@ export class Task_BuildStructure implements Task {
     this.requireResource = false;
     this.validWorkers = WorkerTypes.filter(w => w.categories.includes("builder")).sort(((a, b) => a.partSum > b.partSum ? -1 : 1)); //sort decending
     this.estRemainingTime = _.min([constructionSite.progressTotal, 2000])/5;;                   //really rough estimation
+    this.maxQueueableDepth = 2;
 
     this.building = false;
     this.sourceID = sourceID;

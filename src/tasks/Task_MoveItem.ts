@@ -17,6 +17,7 @@ export class Task_MoveItem implements Task {
     estRemainingTime: number;
     resourceCost:      number;
     isInit:                 boolean;
+    maxQueueableDepth: number;
 
   //-------------------------------------------
 
@@ -39,6 +40,7 @@ export class Task_MoveItem implements Task {
     this.validWorkers = WorkerTypes.filter(w => w.categories.includes("hauler" || "builder") && w.CARRY*50 >= ammount).sort((a,b) => (a.categories.includes("hauler") ? 1 : (a.CARRY > b.CARRY) ? 1 : -1));
     //console.log("valid workers in move constructor: " + JSON.stringify(this.validWorkers));
     this.estRemainingTime = (PathFinder.search((Game.getObjectById(sourceID) as AnyStoreStructure).pos, (Game.getObjectById(destinationID) as AnyStoreStructure).pos)).cost;    //assuming speed 1
+    this.maxQueueableDepth = 6;
 
     this.sourceID = sourceID;
     this.destinationID = destinationID;

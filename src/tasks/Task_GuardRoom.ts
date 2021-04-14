@@ -16,6 +16,7 @@ export class Task_GuardRoom implements Task {
     estRemainingTime: number;
     resourceCost:      number;
     isInit:                 boolean;
+    maxQueueableDepth: number;
 
   //-------------------------------------------
 
@@ -36,6 +37,8 @@ export class Task_GuardRoom implements Task {
     this.estRemainingTime = 9999999999;
     this.resourceCost = 0;          //estimate
     this.isInit = false;
+    this.maxQueueableDepth = 1;
+
     this.isRanged = validWorker.categories.includes("ranged");
   }
 

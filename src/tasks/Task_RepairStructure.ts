@@ -16,6 +16,7 @@ export class Task_RepairStructure implements Task {
     estRemainingTime: number;
     resourceCost:      number;
     isInit:                 boolean;
+    maxQueueableDepth: number;
 
   //-------------------------------------------
 
@@ -34,6 +35,8 @@ export class Task_RepairStructure implements Task {
     this.requireResource = false;
     this.validWorkers = WorkerTypes.filter(w => w.categories.includes("builder")).sort(((a, b) => a.partSum > b.partSum ? -1 : 1));
     this.estRemainingTime = _.min([(repairSite.hitsMax - repairSite.hits)/100,500]);;                   //really rough estimation
+
+    this.maxQueueableDepth = 4;
 
     this.repairing = false;
     this.structureID = repairSite.id;

@@ -16,6 +16,7 @@ export class Task_JetcanMine implements Task {
     estRemainingTime: number;
     resourceCost:      number;
     isInit:                 boolean;
+    maxQueueableDepth: number;
 
   //-------------------------------------------
 
@@ -36,6 +37,7 @@ export class Task_JetcanMine implements Task {
     this.canID = container.id;
     this.resourceCost = 0;
     this.isInit = false;
+    this.maxQueueableDepth = 0;
 
 
   }

@@ -16,6 +16,7 @@ export class Task_UpgradeController implements Task {
     estRemainingTime: number;
     resourceCost:      number;
     isInit:                 boolean;
+    maxQueueableDepth: number;
 
   //-------------------------------------------
 
@@ -39,6 +40,8 @@ export class Task_UpgradeController implements Task {
     //console.log("second valid workers in upgrade constructor's cost: " + this.validWorkers[1].cost);
     this.estRemainingTime = (PathFinder.search((Game.getObjectById(sourceID) as AnyStoreStructure).pos, (Game.getObjectById(destinationID) as StructureController).pos)).cost;    //assuming speed 1
 
+    this.maxQueueableDepth = 3;
+
     this.sourceID = sourceID;
     this.destinationID = destinationID;
     //this.ammount = ammount;
@@ -46,6 +49,8 @@ export class Task_UpgradeController implements Task {
     this.hasEnergy = false;
     this.resourceCost = 100;          //estimate
     this.isInit = false;
+
+
   }
 
 

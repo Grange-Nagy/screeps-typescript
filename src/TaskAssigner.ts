@@ -24,7 +24,7 @@ export function assignTasks(newTasks: Array<Task>, currentWorkers: Array<Creep |
               continue;
             }else{
               if (valWorker.name == workman.memory.type.name){
-                  if(workman.memory.tasks.length && workman.memory.tasks.length >= 4 &&
+                  if(workman.memory.tasks.length && workman.memory.tasks.length >= task.maxQueueableDepth &&
                    !(workman.memory.tasks[0].priority < task.priority)){
                     continue;
                   }
