@@ -90,8 +90,14 @@ export function assignTasks(newTasks: Array<Task>, currentWorkers: Array<Creep |
                   }else{time_to_live = 0;}
                 }else{time_to_live = 99999999999;}
 
+                if(task.estRemainingTime > 9999 || task.estRemainingTime == -1){
+                  var adjusted_estRemainingTime = 0;
+                }else{
+                  var adjusted_estRemainingTime = task.estRemainingTime;
+                }
+
                 //console.log("total cost: " + totalCost + ", winner[1]: " + winner[1] + ", totalCost + task.estRemainingTime: " + (totalCost + task.estRemainingTime) + ", time to live: " + time_to_live);
-                if(totalCost <= winner[1] && totalCost + task.estRemainingTime < time_to_live){
+                if(totalCost <= winner[1] && totalCost + adjusted_estRemainingTime < time_to_live){
                   winner[0] = potentialWorker;
                   winner[1] = totalCost;
                 }
@@ -163,9 +169,15 @@ export function assignTasks(newTasks: Array<Task>, currentWorkers: Array<Creep |
                   }else{time_to_live = 0;}
                 }else{time_to_live = 9999999999;}
 
+                if(task.estRemainingTime > 9999 || task.estRemainingTime == -1){
+                  var adjusted_estRemainingTime = 0;
+                }else{
+                  var adjusted_estRemainingTime = task.estRemainingTime;
+                }
+
                 let totalCost = (path.cost * potentialWorker.memory.type.unburdened_speed * PATH_COST_FACTOR) + estTimeUntilFree;
                 //console.log("total cost: " + totalCost + ", winner[1]: " + winner[1] + ", totalCost + task.estRemainingTime: " + (totalCost + task.estRemainingTime) + ", time to live: " + time_to_live);
-                if(totalCost <= winner[1] && totalCost + task.estRemainingTime < time_to_live){
+                if(totalCost <= winner[1] && totalCost + adjusted_estRemainingTime < time_to_live){
                   winner[0] = potentialWorker;
                   winner[1] = totalCost;
                   //console.log("Winner found in task " + task.name);
@@ -175,7 +187,7 @@ export function assignTasks(newTasks: Array<Task>, currentWorkers: Array<Creep |
               }
               //////////////////////////////////////////
 
-              if(1000 < winner[1] && winner[1] < 9999){
+              if(winner[1] > 1000){
                 continue;
               }
               //console.log("WINNER cost: " + winner[1]);
