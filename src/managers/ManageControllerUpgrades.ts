@@ -12,7 +12,7 @@ export function manageControllerUpgrades(spawn: StructureSpawn, containerStates:
     if(roomContainers != [] && roomContainers && roomContainers != null && roomContainers.length != 0){
         //console.log(spawn.name);
         let maxRoomContaineramm = roomContainers.reduce((a,b) => (a[1] > b[1]) ? a : b)[1];
-        if(maxRoomContaineramm > 750){
+        if(maxRoomContaineramm > 250){
             let maxRoomContainerID = roomContainers.reduce((a,b) => (a[1] > b[1]) ? a : b)[0];
             if (spawn.room.controller){
                 newTasks.push(new Task_UpgradeController(maxRoomContainerID, spawn.room.controller.id,2));

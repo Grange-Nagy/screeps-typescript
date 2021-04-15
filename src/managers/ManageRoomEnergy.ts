@@ -68,7 +68,9 @@ export function manageRoomEnergy(spawn: StructureSpawn, active_tasks: Array<[Tas
             }else if(need instanceof StructureExtension){
                 needed = 50 - need.store.energy;
             }else if(need instanceof StructureTower){
+                //console.log("somethings fucked above this");
                 needed = 1000 - need.store.energy;
+                //console.log(needed);
             }else{
                 continue;
             }
@@ -85,13 +87,16 @@ export function manageRoomEnergy(spawn: StructureSpawn, active_tasks: Array<[Tas
             if (sourceDest != null){
                 let sourceIndex = roomContainers.findIndex(x => x[2].isEqualTo(sourceDest as RoomPosition));
                 if(roomContainers[sourceIndex][1] >= needed + 200){
+                    //console.log("norm: " + need.structureType + ", id: " + need.id);
                     //console.log("move task est container stored: " + roomContainers[sourceIndex][1]);
                     newTasks.push(new Task_MoveItem(roomContainers[sourceIndex][0], need.id, needed, RESOURCE_ENERGY, prio));
+                    //console.log("norm: " + need.structureType + ", need: " + needed);
                     break;
                 }
                 let maxRoomContaineramm = roomContainers.reduce((a,b) => (a[1] > b[1]) ? a : b)[1];
                 if(maxRoomContaineramm > needed + 200){
                     let maxRoomContainerID = roomContainers.reduce((a,b) => (a[1] > b[1]) ? a : b)[0];
+                    console.log("else: " + need.structureType);
                     newTasks.push(new Task_MoveItem(maxRoomContainerID, need.id, needed, RESOURCE_ENERGY, prio));
                     break;
                 }

@@ -1,6 +1,7 @@
 import { Task } from "Task";
+import { Task_MoveItem } from "tasks/Task_MoveItem";
 import { Task_SpawnCreep } from "tasks/Task_SpawnCreep";
-import { findNearestInTime } from "utils/Utilities";
+import { findNearestInTime, logCostAdj } from "utils/Utilities";
 
 const PATH_COST_FACTOR = 2;
 
@@ -12,7 +13,10 @@ export function assignTasks(newTasks: Array<Task>, currentWorkers: Array<Creep |
     newTasks.sort(((a: Task, b: Task) => a.priority > b.priority ? -1 : 1));
     for(let task of newTasks){
     //checks valid worker types in specified ordering
-      //console.log("Task: " + task.name);
+
+      if(task instanceof Task_MoveItem){
+        //console.log("Task: " + task.destinationID);
+      }
       var isAssigned = false;
 
 
@@ -82,7 +86,7 @@ export function assignTasks(newTasks: Array<Task>, currentWorkers: Array<Creep |
                     }
                   }
                 }
-                let totalCost = (path.cost * potentialWorker.memory.type.unburdened_speed * PATH_COST_FACTOR) + estTimeUntilFree;
+                let totalCost = (logCostAdj(path.cost) * potentialWorker.memory.type.unburdened_speed) + estTimeUntilFree;
                 let time_to_live = 0;
                 if(potentialWorker instanceof Creep && task.estRemainingTime < 99999){
                   if(potentialWorker.ticksToLive){
@@ -153,6 +157,8 @@ export function assignTasks(newTasks: Array<Task>, currentWorkers: Array<Creep |
                         estTimeUntilFree = potentialWorker.memory.tasks[i].estRemainingTime;
                       }else{
                         let pathBetween = PathFinder.search(potentialWorker.memory.tasks[i - 1].taskDestination, potentialWorker.memory.tasks[i].taskLocation);
+                        //console.log("pathBetween.cost = " + pathBetween.cost);
+                        //console.log("pathBetween.adj = " + logCostAdj(pathBetween.cost));
                         estTimeUntilFree += (pathBetween.cost * potentialWorker.memory.type.unburdened_speed) + potentialWorker.memory.tasks[i].estRemainingTime;
                         //console.log("potentialWorker.memory.tasks?.length: " + potentialWorker.memory.tasks?.length + ", est time free: " + estTimeUntilFree);
                       }
@@ -174,9 +180,12 @@ export function assignTasks(newTasks: Array<Task>, currentWorkers: Array<Creep |
                 }else{
                   var adjusted_estRemainingTime = task.estRemainingTime;
                 }
+                //console.log("path.cos = " + path.cost);
+                //console.log("path.adj = " + logCostAdj(path.cost));
 
-                let totalCost = (path.cost * potentialWorker.memory.type.unburdened_speed * PATH_COST_FACTOR) + estTimeUntilFree;
-                //console.log("total cost: " + totalCost + ", winner[1]: " + winner[1] + ", totalCost + task.estRemainingTime: " + (totalCost + task.estRemainingTime) + ", time to live: " + time_to_live);
+
+                let totalCost = (logCostAdj(path.cost) * potentialWorker.memory.type.unburdened_speed) + estTimeUntilFree;
+                //console.log("cost: " + totalCost + ", current winner: " + winner[1] + "; totalCost + adjusted_estRemainingTime: " + (totalCost + adjusted_estRemainingTime) + ", time to live: " + time_to_live);
                 if(totalCost <= winner[1] && totalCost + adjusted_estRemainingTime < time_to_live){
                   winner[0] = potentialWorker;
                   winner[1] = totalCost;
@@ -188,6 +197,7 @@ export function assignTasks(newTasks: Array<Task>, currentWorkers: Array<Creep |
               //////////////////////////////////////////
 
               if(winner[1] > 1000){
+                console.log("No suitable winner found");
                 continue;
               }
               //console.log("WINNER cost: " + winner[1]);
