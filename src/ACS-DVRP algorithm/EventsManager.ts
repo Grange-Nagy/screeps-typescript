@@ -4,7 +4,7 @@ const Tco = 123;    //cutoff time
 const Tac = 123;    //advanced commitment time
 const T = 123;      //working day
 const n_ts = 123;   //number of time slices
-const T_ts = 123;
+const T_ts = T/n_ts;
 
 
 //https://doc.rero.ch/record/312554/files/10878_2005_Article_4922.pdf
@@ -15,6 +15,20 @@ export function eventsManager(preOrds: Array<Task>){
     //get each worker location
     var staticProb;
     var commOrds: Array<Task>;
+
+
+    //for cache lookup, query helper array for indexes maybe use a map?
+    //source = helperArray.findIndex(sourcePos)
+    //dest =   helperArray.findIndex(destPos)
+    var helperArray: Array<RoomPosition>;
+
+    //access like masterCache[source][dest]
+    //upper triangular matrix containing path [cost, pheromone, last updated timestamp]
+    var masterCache:              Array<Array<[Number, Number, Number]>>;
+
+    //need an adjustment formula as to not need to update matrix every cycle but still decay pheromone
+    //decay = 1/250
+    //pheromone = e^(-timeDelta*decay) * pheromone
 
     while(pendOrds.length != 0 || time < Tco){
 
