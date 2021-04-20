@@ -38,7 +38,7 @@ interface CreepMemory{
 
   interface RoomMemory{
     isGlobal:        boolean;
-
+    cache: string;
     sourceContainerAssignments: Array<[Id<Source>, RoomPosition]>;
 
   }

@@ -1,20 +1,21 @@
 import { Task } from "Task";
 
-const Tco = 123;    //cutoff time
-const Tac = 123;    //advanced commitment time
-const T = 123;      //working day
-const n_ts = 123;   //number of time slices
-const T_ts = T/n_ts;
+const Tac = 5;    //advanced commitment time, in ticks
+
+var taskManagerMemory = Game.spawns['Spawn1'].room.memory;
 
 
 //https://doc.rero.ch/record/312554/files/10878_2005_Article_4922.pdf
-export function eventsManager(preOrds: Array<Task>){
+export function eventsManager(preOrds: Array<Task>, currentWorkers: Array<Creep | StructureSpawn>){
 
     var time = 0
     var pendOrds: Array<Task> = preOrds;
     //get each worker location
     var staticProb;
+    var newOrders:  Array<Task>;
     var commOrds: Array<Task>;
+
+    var worstCaseIterationTime = 100; //in ms
 
 
     //for cache lookup, query helper array for indexes maybe use a map?
@@ -23,38 +24,52 @@ export function eventsManager(preOrds: Array<Task>){
     var helperArray: Array<RoomPosition>;
 
     //access like masterCache[source][dest]
-    //upper triangular matrix containing path [cost, pheromone, last updated timestamp]
-    var masterCache:              Array<Array<[Number, Number, Number]>>;
+    //keys are concat stringified room positions [cost, pheromone, last updated timestamp]
+    if (taskManagerMemory.cache == null){
+        var cache = new Map<[RoomPosition,RoomPosition],[Number, Number, Number]>();
+    }else{
+        cache = new Map(JSON.parse(taskManagerMemory.cache));
+    }
+
 
     //need an adjustment formula as to not need to update matrix every cycle but still decay pheromone
     //decay = 1/250
     //pheromone = e^(-timeDelta*decay) * pheromone
 
-    while(pendOrds.length != 0 || time < Tco){
+    const now = new Date();
+    const startTime = now.getTime();
 
-        if(time > 0){
-            staticProb = buildProblem(pendOrds, time + Tac);
-        }else{
-            staticProb = buildProblem(pendOrds, time);
+    while(startTime - now.getTime() + worstCaseIterationTime < Game.cpu.tickLimit){
+        //need a solution class or some string representation
+        //how do I select which worker to search?
+        //let worstTime = min(workerRoutes.time)
+        //while(there are unreached tasks){
+            //select a worker (how?)
+            //calculate weights for all possible tasks
+                //weight = (pheromone - recent) / distance
+            //select highest
+            //remove task from pool
+
         }
 
-        runACS(staticProb);
 
-        commOrds = getOrders(staticProb, time + (T/n_ts) + Tac)
+        staticProb = buildProblem(pendOrds)
 
-        commitOrders(commOrds);
+        runACS(staticProb, cache);
 
-        pendOrds = pendOrds.filter(x => !commOrds.includes(x));
-
-        pendOrds.concat(newOrders);
-
-        time += T_ts;
 
         //update starting positions
         //update pheromone matrix
 
 
     }
+
+    commOrds = getOrders(staticProb, time + (T/n_ts) + Tac)
+    commitOrders(commOrds);
+    pendOrds = pendOrds.filter(x => !commOrds.includes(x));
+    pendOrds.concat(newOrders);
+
+    taskManagerMemory.cache = JSON.stringify(cache);
 
 
 }
