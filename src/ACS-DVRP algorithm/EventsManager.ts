@@ -1,4 +1,5 @@
 import { Task } from "Task";
+import { Cache } from "./Cache";
 
 const Tac = 5;    //advanced commitment time, in ticks
 
@@ -6,38 +7,22 @@ var taskManagerMemory = Game.spawns['Spawn1'].room.memory;
 
 
 //https://doc.rero.ch/record/312554/files/10878_2005_Article_4922.pdf
-export function eventsManager(preOrds: Array<Task>, currentWorkers: Array<Creep | StructureSpawn>){
+export function eventsManager(pendOrds: Array<Task>, currentWorkers: Array<Creep | StructureSpawn>){
 
-    var time = 0
-    var pendOrds: Array<Task> = preOrds;
-    //get each worker location
     var staticProb;
-    var newOrders:  Array<Task>;
     var commOrds: Array<Task>;
 
     var worstCaseIterationTime = 100; //in ms
 
+    var cache: Cache = new Cache(taskManagerMemory.cache);
 
-    //for cache lookup, query helper array for indexes maybe use a map?
-    //source = helperArray.findIndex(sourcePos)
-    //dest =   helperArray.findIndex(destPos)
-    var helperArray: Array<RoomPosition>;
-
-    //access like masterCache[source][dest]
-    //keys are concat stringified room positions [cost, pheromone, last updated timestamp]
-    if (taskManagerMemory.cache == null){
-        var cache = new Map<[RoomPosition,RoomPosition],[Number, Number, Number]>();
-    }else{
-        cache = new Map(JSON.parse(taskManagerMemory.cache));
-    }
-
-
-    //need an adjustment formula as to not need to update matrix every cycle but still decay pheromone
-    //decay = 1/250
-    //pheromone = e^(-timeDelta*decay) * pheromone
 
     const now = new Date();
     const startTime = now.getTime();
+
+
+    //create the problem
+    staticProb = new Problem(pendOrds, currentWorkers);
 
     while(startTime - now.getTime() + worstCaseIterationTime < Game.cpu.tickLimit){
         //need a solution class or some string representation
@@ -53,7 +38,6 @@ export function eventsManager(preOrds: Array<Task>, currentWorkers: Array<Creep 
         }
 
 
-        staticProb = buildProblem(pendOrds)
 
         runACS(staticProb, cache);
 
@@ -61,7 +45,8 @@ export function eventsManager(preOrds: Array<Task>, currentWorkers: Array<Creep 
         //update starting positions
         //update pheromone matrix
 
-
+        //save cache
+        taskManagerMemory.cache = cache.serialize();
     }
 
     commOrds = getOrders(staticProb, time + (T/n_ts) + Tac)
@@ -69,7 +54,7 @@ export function eventsManager(preOrds: Array<Task>, currentWorkers: Array<Creep 
     pendOrds = pendOrds.filter(x => !commOrds.includes(x));
     pendOrds.concat(newOrders);
 
-    taskManagerMemory.cache = JSON.stringify(cache);
+
 
 
 }
