@@ -96,8 +96,13 @@ export function runTask_UpgradeController(taskOwner: Creep, task: Task_UpgradeCo
                   taskOwner.transfer(dest,task.itemType);
                   task.status = "COMPLETED";
                 }else{
-                  console.log("CREEP STUCK UPGRADE: " + err)
-                  task.status = "HALTED";
+                  if(err == -12){
+                    task.status = "COMPLETED";
+                  }else{
+                    console.log("CREEP STUCK UPGRADE: " + err)
+                    task.status = "HALTED";
+                  }
+
                 }
 
               }

@@ -12,6 +12,7 @@ import { getContainerStates } from "utils/getContainerStates";
 import { manageControllerUpgrades } from "managers/ManageControllerUpgrades";
 import { Task_BuildStructure } from "tasks/Task_BuildStructure";
 import { eventsManager } from "ACS-DVRP algorithm/EventsManager";
+import { Cache } from "ACS-DVRP algorithm/Cache";
 
 Traveler.init();
 
@@ -45,10 +46,10 @@ interface CreepMemory{
   }
 
 }
-
+var taskManagerMemory = Game.spawns['Spawn1'].room.memory;
 
 export const loop = ErrorMapper.wrapLoop(() => {
-  //console.log(`Current game tic is ${Game.time}`);
+  console.log(`Current game tic is ${Game.time} -----------------------`);
 
   // Automatically delete memory of missing creeps
   for (const name in Memory.creeps) {
@@ -64,7 +65,7 @@ export const loop = ErrorMapper.wrapLoop(() => {
 
 
   //define global memory as room 1's
-  var taskManagerMemory = Game.spawns['Spawn1'].room.memory;
+
   taskManagerMemory.isGlobal = true;
   if(!taskManagerMemory.sourceContainerAssignments){
     taskManagerMemory.sourceContainerAssignments = [];
@@ -76,10 +77,6 @@ export const loop = ErrorMapper.wrapLoop(() => {
   var active_tasks: Array<[Task, (Creep | StructureSpawn)]> = [];
   var enqueued_tasks: Array<[Task, (Creep | StructureSpawn)]> = [];
 
-  var temp = Game.getObjectById('8e577f9089a5ccf' as Id<ConstructionSite>);
-  if(temp &&Game.time % 10 == 0){
-    //newTasks.push(new Task_BuildStructure(('c3ce57b592d7b10' as Id<StructureContainer>),temp,3));
-  }
 
 
 
@@ -125,7 +122,14 @@ export const loop = ErrorMapper.wrapLoop(() => {
 
 
   }
-  if(Game.time % 5 == 0){
+
+  if(Game.time % 31 == 0){
+    var cache: Cache = new Cache(taskManagerMemory.cache);
+    cache.clean();
+    taskManagerMemory.cache = cache.serialize();
+  }
+
+  if(Game.time % 16 == 0 && Game.cpu.tickLimit >= 490){
     let testGroup = newTasks.concat(active_tasks.map(x => x[0]));
     testGroup = testGroup.concat(enqueued_tasks.map(x => x[0]));
     eventsManager(testGroup,currentWorkers);
