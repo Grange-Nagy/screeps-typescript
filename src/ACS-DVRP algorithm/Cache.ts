@@ -1,4 +1,5 @@
 import { Task } from "Task";
+import { Problem } from "./Problem";
 
 var taskManagerMemory = Game.spawns['Spawn1'].room.memory;
 const RECALC_TIME = 200;
@@ -19,7 +20,7 @@ export class Cache{
 
 
     constructor(serial: string){
-        if (serial == null){
+        if (serial == null || serial == undefined || serial == "{}"){
             this.store = new Map<[RoomPosition,RoomPosition],[number, number, number]>();
         }else{
             this.store = new Map(JSON.parse(serial));
@@ -27,6 +28,7 @@ export class Cache{
     }
 
     public serialize():string{
+        //console.log(JSON.stringify(this.store));
         return JSON.stringify(this.store);
     }
 
@@ -39,7 +41,7 @@ export class Cache{
                 //recalculate cost
                 entry[0] = PathFinder.search(source,dest).cost;
             }
-            //update phermone levels
+            //update pheromone levels
             entry[1] = Math.exp(-time_since_last_update*DECAY) * entry[1];
 
 
@@ -49,15 +51,15 @@ export class Cache{
         }
 
         this.store.set([source,dest],entry);
+        console.log(JSON.stringify(this.store.get([source,dest])));
         return entry;
 
     }
 
-    /*
-    let sol: Array<[Creep | StructureSpawn, Array<Task>]>
-    public updatePhermones(solution: Solution){
 
+    public updatePheromones(problem: Problem){
+        let solution = problem.bestSolution;
     }
-    */
+
 
 }

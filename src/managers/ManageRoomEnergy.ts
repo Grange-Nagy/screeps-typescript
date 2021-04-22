@@ -96,7 +96,7 @@ export function manageRoomEnergy(spawn: StructureSpawn, active_tasks: Array<[Tas
                 let maxRoomContaineramm = roomContainers.reduce((a,b) => (a[1] > b[1]) ? a : b)[1];
                 if(maxRoomContaineramm > needed + 200){
                     let maxRoomContainerID = roomContainers.reduce((a,b) => (a[1] > b[1]) ? a : b)[0];
-                    console.log("else: " + need.structureType);
+                    //console.log("else: " + need.structureType);
                     newTasks.push(new Task_MoveItem(maxRoomContainerID, need.id, needed, RESOURCE_ENERGY, prio));
                     break;
                 }

@@ -113,7 +113,7 @@ export function runTask_RepairStructure(taskOwner: Creep, task: Task_RepairStruc
                     }
                 }
             }else{
-                console.log(taskOwner.name + " failed to find path to source to repair " + task.structureID);
+                //console.log(taskOwner.name + " failed to find path to source to repair " + task.structureID);
             }
         }
 

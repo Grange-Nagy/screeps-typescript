@@ -197,7 +197,7 @@ export function assignTasks(newTasks: Array<Task>, currentWorkers: Array<Creep |
               //////////////////////////////////////////
 
               if(winner[1] > 1000){
-                console.log("No suitable winner found");
+                //console.log("No suitable winner found");
                 continue;
               }
               //console.log("WINNER cost: " + winner[1]);

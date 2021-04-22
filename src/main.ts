@@ -11,6 +11,7 @@ import { runWorkers } from "RunWorkers";
 import { getContainerStates } from "utils/getContainerStates";
 import { manageControllerUpgrades } from "managers/ManageControllerUpgrades";
 import { Task_BuildStructure } from "tasks/Task_BuildStructure";
+import { eventsManager } from "ACS-DVRP algorithm/EventsManager";
 
 Traveler.init();
 
@@ -124,10 +125,18 @@ export const loop = ErrorMapper.wrapLoop(() => {
 
 
   }
+  if(Game.time % 5 == 0){
+    let testGroup = newTasks.concat(active_tasks.map(x => x[0]));
+    testGroup = testGroup.concat(enqueued_tasks.map(x => x[0]));
+    eventsManager(testGroup,currentWorkers);
+  }
+
   //console.log("num new tasks this tick: " + newTasks.length);
   var unassignedTasks: Array<Task> = assignTasks(newTasks, currentWorkers, active_tasks, enqueued_tasks);
 
   //request more creeps
+
+
 
 
   for(let unassignedTask of unassignedTasks){
