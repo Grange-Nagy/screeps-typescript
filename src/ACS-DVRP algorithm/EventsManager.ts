@@ -30,7 +30,7 @@ export function eventsManager(pendOrds: Array<Task>, currentWorkers: Array<Creep
     while(Game.cpu.getUsed() + worstCaseIterationTime < Game.cpu.tickLimit){
 
         staticProb.runACS(cache);
-        //console.log("current winner: " + staticProb.bestSolution[0]);
+        console.log("current winner: " + staticProb.bestSolution[0]);
         cycles++;
     }
 

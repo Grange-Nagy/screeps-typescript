@@ -42,6 +42,7 @@ interface CreepMemory{
     isGlobal:        boolean;
     cache: string;
     sourceContainerAssignments: Array<[Id<Source>, RoomPosition]>;
+    testTasks: string;
 
   }
 
@@ -129,9 +130,22 @@ export const loop = ErrorMapper.wrapLoop(() => {
     taskManagerMemory.cache = cache.serialize();
   }
 
+  //taskManagerMemory.testTasks = "";
   if(Game.time % 16 == 0 && Game.cpu.tickLimit >= 490){
-    let testGroup = newTasks.concat(active_tasks.map(x => x[0]));
-    testGroup = testGroup.concat(enqueued_tasks.map(x => x[0]));
+    let testGroup: Array<Task>;
+    if(!taskManagerMemory.testTasks || taskManagerMemory.testTasks == ""){
+      testGroup = newTasks.concat(active_tasks.map(x => x[0]));
+      testGroup = testGroup.concat(enqueued_tasks.map(x => x[0]));
+      let str:string = JSON.stringify(testGroup);
+      //console.log(str);
+      taskManagerMemory.testTasks = str;
+    }else{
+      console.log(taskManagerMemory.testTasks);
+      testGroup = JSON.parse(taskManagerMemory.testTasks);
+    }
+
+
+
     eventsManager(testGroup,currentWorkers);
   }
 

@@ -6,7 +6,7 @@ import { Problem } from "./Problem";
 var taskManagerMemory = Game.spawns['Spawn1'].room.memory;
 const RECALC_TIME = 100;
 const CLEAR_TIME = 150;
-const DECAY = 1/250;
+const DECAY = 1/500;
 
 
 
@@ -99,11 +99,11 @@ export class Cache{
 
         if(entry){
             //update pheromone levels
-            entry[1]++;
+            entry[1]+=10;
 
         }else{
             console.log("cache miss on incrementPheromones, this should not happen")
-            let newEntry: [number, number, number] = [PathFinder.search(source,dest).cost + 1, 1, Game.time];
+            let newEntry: [number, number, number] = [PathFinder.search(source,dest).cost + 1, 5, Game.time];
             entry = newEntry;
         }
 

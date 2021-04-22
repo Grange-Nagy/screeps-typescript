@@ -56,9 +56,10 @@ export class Problem{
                     if (!recency){
                         recency = 0;
                     }
-                    //if(recency > 0){console.log("recency detected: " + recency);}
+                    //if(cacheTuple[1] > 1){console.log("pheremone detected: " + cacheTuple[1]);}
                     //TODO: tweak the weightings (include task prio?)
-                    let w = ((cacheTuple[1] - recency + 10) / cacheTuple[0]) + 1;
+                    let w = (((cacheTuple[1]) - recency + 10) / cacheTuple[0]) + 1;
+                    //let w = ((-recency + 10) / cacheTuple[0]) + 1;
                     //console.log("null: " + w + ", tuple: " + JSON.stringify(cacheTuple));
                     taskWeights.push(w);
                     //taskWeights.push(1);
