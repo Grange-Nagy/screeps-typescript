@@ -1,11 +1,12 @@
 import { Task } from "Task";
 import { Task_BuildStructure } from "tasks/Task_BuildStructure";
 
+var OVERRIDE = false;
 
 export function manageBuildTasks(spawn: StructureSpawn,
                                 active_tasks: Array<[Task, (Creep | StructureSpawn)]>,
                                 enqueued_tasks: Array<[Task, (Creep | StructureSpawn)]>,
-                                containerStates: Array<[Id<StructureContainer>, number, RoomPosition]>): Array<Task>{
+                                containerStates: Array<[Id<StructureContainer>, number, RoomPosition]>,): Array<Task>{
 
     let newTasks: Array<Task> = [];
 
@@ -14,7 +15,14 @@ export function manageBuildTasks(spawn: StructureSpawn,
     let constructionSites = spawn.room.find(FIND_CONSTRUCTION_SITES);
 
     //FOR EXPANSIONS
-    //constructionSites.push(Game.constructionSites['8e577f9089a5ccf']);
+    if(Game.constructionSites['84e46677693dc86']){
+        constructionSites.push(Game.constructionSites['84e46677693dc86']);
+        OVERRIDE = true;
+    }
+    if(Game.constructionSites['9428679a21ef124']){
+        constructionSites.push(Game.constructionSites['9428679a21ef124']);
+        OVERRIDE = true;
+    }
 
     let activeSiteIds: Array<Id<ConstructionSite>> = [];
     for(let task of active_tasks){
@@ -41,8 +49,9 @@ export function manageBuildTasks(spawn: StructureSpawn,
     }
 
     for( let site of constructionSites){
-        if(!activeSiteIds.includes(site.id) &&
-           !queuedSiteIds.includes(site.id)){
+        if((!activeSiteIds.includes(site.id) &&
+            !queuedSiteIds.includes(site.id))||
+            OVERRIDE){
             //console.log("%%%%%%%%% " + roomContainers.length);
             let sourceDest = PathFinder.search(site.pos,roomContainers.map(x => x[2])).path.pop();
             if (sourceDest != null){

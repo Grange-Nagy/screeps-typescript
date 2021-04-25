@@ -1,4 +1,4 @@
 # Screeps Typescript Solution
 
-Please dont judge this badness
+Task generation services and ACS-DVRP assignment
 

@@ -58,11 +58,19 @@ export const loop = ErrorMapper.wrapLoop(() => {
       delete Memory.creeps[name];
     }
   }
+
+  /*
   //establish spawner
-  let x = Game.rooms['W1N2'].controller;
+  let err = Game.creeps['con'].travelTo(new RoomPosition(28,8,'W1N4'));
+  //Game.creeps['con'].say("FHUJFUWWUHF");
+  //console.log(err);
+  let x = Game.rooms['W1N4'].controller;
   if(x){
-    //Game.creeps['con'].claimController(x);
+    let err = Game.creeps['con'].claimController(x);
+    console.log(err);
   }
+  */
+
 
 
   //define global memory as room 1's
@@ -148,6 +156,7 @@ export const loop = ErrorMapper.wrapLoop(() => {
 
     eventsManager(testGroup,currentWorkers);
   }
+
 
   //console.log("num new tasks this tick: " + newTasks.length);
   var unassignedTasks: Array<Task> = assignTasks(newTasks, currentWorkers, active_tasks, enqueued_tasks);
